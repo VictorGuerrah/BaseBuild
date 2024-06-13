@@ -1,0 +1,67 @@
+# Desired Features List
+
+## Security:
+- Configuration of HTTPS in the development environment to ensure secure data transmission.
+- Implementation of data input sanitization to prevent XSS (Cross-Site Scripting) and SQL Injection.
+- Secure php.ini configuration to limit exposure to vulnerabilities.
+- Implementation of mechanisms to protect against brute force attacks, such as automatic blocking after consecutive attempts.
+
+## Secure Credentials Management:
+- Using of secure hashing functions and salting techniques.
+- Implementation of strong password policies, including complexity requirements and periodic expiration.
+- Centralization and secure management of sensitive configurations, such as API keys and database credentials.
+
+## Session Management:
+- Implementation of session management for user authentication, including periodic session regeneration to prevent session fixation attacks.
+- Strict control over session expiration and secure revocation of authentication tokens.
+
+## JWT Authentication:
+- Integration of authentication using JSON Web Tokens (JWT) for stateless and secure communication between client and server.
+- Implementation of a login endpoint that issues JWT tokens with appropriate expiration times and digital signatures.
+
+## Routing System:
+- Development of a robust routing system for application endpoints, following RESTful or similar patterns.
+- Clear definition of routes for different application functionalities, ensuring proper separation of concerns.
+
+## Middleware:
+- Implementation of middleware to intercept and process HTTP requests in a modular and reusable manner.
+- Use of middleware for authentication, role-based access control, and other global business logic applications.
+
+## Migrations System:
+- Use of migrations for database schema versioning and management, facilitating the handling of structural changes.
+- Development of robust and reversible migration scripts to ensure data consistency and integrity.
+
+## Dependency Injection:
+- Implementation of dependency injection to promote loose coupling and facilitate unit testing.
+- Use of autowiring for automatic dependency injection, reducing the need for manual configuration.
+
+## Separate Frontend with SCSS:
+- Modular structuring of frontend separate from backend, following MVC or similar software architecture principles.
+- Use of SCSS to compile CSS stylesheets, providing a more organized and efficient development environment.
+
+## Logging:
+- Implementation of logging for recording important events and diagnosing issues.
+- Use of tools like Monolog to centralize logs, enabling efficient analysis and easy system maintenance.
+
+## Testing System:
+- Development of comprehensive automated tests, including unit and integration tests.
+- Coverage of critical functionalities such as authentication, access control, and core system operations.
+
+## Redis Caching:
+- Integration of Redis for caching queries and user sessions, significantly improving application performance.
+- Use of Redis for storing temporary data and caching frequently accessed results.
+
+## Internationalization and Localization:
+- Implementation of support for different languages in the application using appropriate libraries.
+- Use of translation files to facilitate adaptation of the user interface for different regions and languages.
+
+## Websockets (if necessary):
+- Implementation of real-time communication with websockets for features requiring instant and interactive updates.
+
+## Advanced Access Control:
+- Definition of granular access control policies based on specific user roles and attributes.
+- Implementation of role-based and permission-based access control, ensuring security and flexibility in authorization management.
+
+## Handling of Notices and Exceptions:
+- Implementation of proper error and exception handling using try-catch for capturing and handling specific types of exceptions.
+- Generation of clear and informative error responses to facilitate debugging and issue diagnosis.
