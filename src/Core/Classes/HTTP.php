@@ -24,7 +24,7 @@ class HTTP
 
     private static function getStatusCodeMessage(int $status): string
     {
-        $statusCodes = self::getStatusCodes();
+        $statusCodes = self::getStatusCode();
         return $statusCodes[$status] ?? 'Unknown Status Code';
     }
 
@@ -46,9 +46,9 @@ class HTTP
         self::$_POST = $content;
     }
 
-    private static function getStatusCodes(): array
+    public static function getStatusCode(int $statusCode = 0): array|string
     {
-        return [
+        $statusCodes = [
             100 => 'Continue',
             101 => 'Switching Protocols',
             200 => 'OK',
@@ -91,9 +91,15 @@ class HTTP
             504 => 'Gateway Timeout',
             505 => 'HTTP Version Not Supported'
         ];
+
+        if ($statusCode != 0) {
+            return $statusCodes[$statusCode];
+        }
+
+        return $statusCodes;
     }
 
-    private static function setHeaders(array $headers): void
+    public static function setHeaders(array $headers): void
     {
         foreach ($headers as $header) {
             header($header);

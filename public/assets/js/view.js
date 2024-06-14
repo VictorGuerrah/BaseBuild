@@ -3,11 +3,9 @@ var View = {
         View.checkAuth(function(isAuthenticated) {
             if (isAuthenticated) {
                 View.load('dashboard/index', '.container', function() {
-                    // Callback vazio, você pode adicionar lógica aqui se necessário
                 });
             } else {
                 View.load('auth/login', 'body', function() {
-                    // Callback vazio, você pode adicionar lógica aqui se necessário
                 });
             }
         });
@@ -22,7 +20,7 @@ var View = {
                 callback();
             }
         }, function(error) {
-            console.error('Erro na requisição AJAX:', error);
+            console.error('Something went wrong:', error);
         });
     },
 
