@@ -2,30 +2,32 @@
 
 namespace App\Repository;
 
-use PDO;
+use App\Core\Database\Connection;
 use App\Model\Entity\UserModel;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Model\ValuableObject\Email;
 
 class UserRepositoryImplemented implements UserRepositoryInterface
 {
-    private PDO $connection;
+    private array $bindValues = [];
 
-    public function __construct(PDO $connection)
+    public function __construct()
     {
-        $this->connection = $connection;
+
     }
 
     public function insert(UserModel $user): void
     {
-        $sql = 'INSERT INTO users (id, email, password) VALUES (:id, :email, :password)';
+        $sql = 'INSERT INTO users (id, email, password) VALUES (?, ?, ?)';
 
         try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->bindValue(':id', $user->getID());
-            $stmt->bindValue(':email', $user->getEmail());
-            $stmt->bindValue(':password', $user->getPasswordHash());
-            $stmt->execute();
+            $this->bindValues[] = $user->getID();
+            $this->bindValues[] = $user->getEmail();
+            $this->bindValues[] = $user->getPasswordHash();
+
+            $stmt = Connection::prepare($sql);
+            Connection::execute($stmt, $this->bindValues);
+
         } catch (\Throwable $th) {
             throw new \Exception("Failed to insert user: " . $th->getMessage());
         }
@@ -33,20 +35,20 @@ class UserRepositoryImplemented implements UserRepositoryInterface
 
     public function getByEmail(string $email): ?UserModel
     {
-        $sql = 'SELECT Email, Password FROM users WHERE Email=:email';
+        $sql = 'SELECT Email, Password FROM users WHERE Email=?';
 
         try {
-            $stmt = $this->connection->prepare($sql);
-            $stmt->bindValue(':email', $email);
-            $stmt->execute();
+            $this->bindValues[] = $email();
 
-            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = Connection::prepare($sql);
+            Connection::execute($stmt, $this->bindValues);
+            $result = $stmt->fetchAll();
 
-            if (!$userData) {
+            if (!$result) {
                 return null;
             }
 
-            $user = new UserModel(new Email($userData['Email']), $userData['Password']);
+            $user = new UserModel(new Email($result['Email']), $result['Password']);
 
             return $user;
         } catch (\Throwable $th) {

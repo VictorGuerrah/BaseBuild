@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
@@ -5,8 +11,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
+
 .login-container {
     background-color: #fff;
     padding: 20px;
@@ -14,10 +20,15 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 300px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 .login-container h2 {
     margin-bottom: 20px;
 }
+
 .login-container input[type="text"],
 .login-container input[type="password"] {
     width: 100%;
@@ -26,6 +37,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 .login-container input[type="submit"] {
     width: 100%;
     padding: 10px;
@@ -36,10 +48,8 @@ body {
     font-size: 16px;
     cursor: pointer;
 }
+
 .login-container input[type="submit"]:hover {
     background-color: #0056b3;
 }
-.error-message {
-    color: red;
-    margin-top: 10px;
-}
+

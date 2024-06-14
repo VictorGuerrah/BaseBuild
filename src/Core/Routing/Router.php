@@ -2,6 +2,8 @@
 
 namespace App\Core\Routing;
 
+use Exception;
+
 class Router
 {
     private static Router $instance;
@@ -9,10 +11,12 @@ class Router
     private static array $routes = [];
     private static int $currentLevel = 0;
 
+    private function __construct() {}
+
     public static function getInstance(): Router
     {
-        if (empty(self::$instance)) {
-            self::$instance = new Router();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
         }
 
         return self::$instance;
@@ -20,47 +24,58 @@ class Router
 
     public static function prefix(string $prefix): Router
     {
-        self::$action[self::$currentLevel]['prefix'] = trim($prefix);
+        self::$action[self::$currentLevel]['prefix'] = trim($prefix, '/');
         return self::getInstance();
     }
 
     public static function getPrefix(): string
     {
         $prefix = '';
-        foreach(self::$action as $action) {
+        foreach (self::$action as $action) {
             if (!empty($action['prefix'])) {
-                $prefix .= isset($action['prefix']) ? '/' . $action['prefix'] : '';
+                $prefix .= '/' . $action['prefix'];
             }
         }
         return $prefix;
     }
 
-    public static function register(string $method, string $uri, array $action): Router
+    public static function register(string $method, string $uri, array $action): void
     {
-        if (empty($action) || !is_array($action)) {
-            throw new \Exception("Error Processing Request"); 
+        if (count($action) !== 2 || !is_string($action[0]) || !is_string($action[1])) {
+            throw new Exception("Invalid action provided for route registration.");
         }
 
-        $uri = self::getPrefix() . '/' . $uri;
-        $uri = ltrim($uri, '/');
-        $uri = rtrim($uri, '/');
+        $uri = self::getPrefix() . '/' . trim($uri, '/');
         self::$routes[$uri] = new Route($method, $uri, $action[0], $action[1]);
-        return self::$routes[$uri];
     }
 
-    public static function post(string $uri, array $action): Router
+    public static function post(string $uri, array $action): void
     {
-        return self::register('POST', $uri, $action);
+        self::register('POST', $uri, $action);
     }
 
     public static function group(callable $routes): void
     {
         self::$currentLevel++;
-
-        call_user_func($routes);
-
-        self::$currentLevel--;
-
+        $routes();
         unset(self::$action[self::$currentLevel]);
+        self::$currentLevel--;
+    }
+
+    public static function search(string $endpoint): ?Route
+    {
+        $trimmedEndpoint = ltrim($endpoint, '/');
+
+        foreach (self::$routes as $key => $route) {
+            $trimmedKey = ltrim($key, '/');
+
+            if ($trimmedEndpoint === $trimmedKey) {
+                if (strtoupper($route->method) !== $_SERVER['REQUEST_METHOD']) {
+                    throw new \Exception("Method not allowed.");
+                }
+                return $route;
+            }
+        }
+        throw new Exception("Route not found.");
     }
 }

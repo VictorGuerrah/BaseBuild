@@ -7,7 +7,7 @@ class Route
     public $class;
     public string $method;
     public string $uri;
-    public ?array $action = [];
+    public ?string $action;
     public ?array $middlewares = [];
 
     public function __construct(string $method, string $uri, $class, $action = null, $middlewares = null)

@@ -7,7 +7,7 @@ use App\Repository\UserRepositoryImplemented;
 use App\Model\ValuableObject\Email;
 use App\Model\ValuableObject\Password;
 
-class LoginController
+class AuthController extends BaseControllerImplemented
 {
     protected UserModel $userModel;
     protected UserRepositoryImplemented $userRepository;
@@ -19,7 +19,12 @@ class LoginController
 
     public function index()
     {
-        // Implemente aqui a lógica para exibir a página de login
+        return $this->view('auth/login');
+    }
+
+    public function checkAuthentication()
+    {
+        return $this->responseJson(['isAuthenticated' => false]);
     }
 
     public function login(array $credentials)
@@ -34,8 +39,6 @@ class LoginController
                 throw new \Exception("Invalid credentials.");
             }
 
-
-            // Verificar senha
             if (!$password->verify($user->getPasswordHash())) {
                 throw new \Exception("Invalid credentials.");
             }
