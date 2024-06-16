@@ -3,16 +3,15 @@
 namespace App\Core\Classes;
 
 use App\Interfaces\ContainerInterface;
-
 use ReflectionClass;
 use Exception;
-use ReflectionException;
 
 class Container implements ContainerInterface
 {
     private array $bindings = [];
+    private array $instances = [];
 
-    public function bind(string $abstract, callable | string $concrete): void
+    public function bind(string $abstract, callable|string $concrete): void
     {
         $this->bindings[$abstract] = $concrete;
     }
@@ -20,13 +19,20 @@ class Container implements ContainerInterface
     public function get(string $class): mixed
     {
         if ($this->has($class)) {
+            if (isset($this->instances[$class])) {
+                return $this->instances[$class];
+            }
+
             $concrete = $this->bindings[$class];
 
             if (is_callable($concrete)) {
-                return $concrete($this);
+                $object = $concrete($this);
+            } else {
+                $object = new $concrete();
             }
 
-            return new $concrete();
+            $this->instances[$class] = $object;
+            return $object;
         }
 
         throw new Exception("Class $class not found in container.");
@@ -75,4 +81,3 @@ class Container implements ContainerInterface
         }
     }
 }
-

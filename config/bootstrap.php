@@ -31,14 +31,11 @@ function registerClassesRecursively(Container $container, string $baseDir, strin
                 continue;
             }
 
-            $interfaces = $reflectionClass->getInterfaces();
-            foreach ($interfaces as $interface) {
-                $container->bind($interface->getName(), fn($container) => Autowired::make($className, $container));
-            }
+            $container->bind($className, fn($container) => Autowired::make($className, $container));
 
-            $container->bind($className, function ($container) use ($className) {
-                return Autowired::make($className, $container);
-            });
+            foreach ($reflectionClass->getInterfaces() as $interface) {
+                $container->bind($interface->getName(), fn($container) => $container->get($className));
+            }
         } catch (ReflectionException $e) {
             error_log("Error loading class $className: " . $e->getMessage());
         } catch (Exception $e) {

@@ -10,15 +10,14 @@ include_once dirname(__FILE__, 3) . '/config/routes.php';
 $container = include_once dirname(__FILE__, 3) . '/config/bootstrap.php';
 
 try {
-    if (!isset($_GET['endpoint'])) {
+    $endpoint = $_GET['endpoint'] ?? null;
+    if (!$endpoint) {
         throw new Exception("Missing endpoint.", 404);
     }
 
     HTTP::setPost($_POST);
 
-    $endpoint = $_GET['endpoint'];
     $route = Router::search($endpoint);
-
     if ($route === null) {
         throw new Exception("Route not found for endpoint '$endpoint'.", 404);
     }
