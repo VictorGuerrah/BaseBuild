@@ -4,25 +4,26 @@ namespace App\Controller;
 
 use App\Core\Classes\Request;
 use App\Core\Classes\Response;
+use App\Interfaces\Controller\AuthControllerInterface;
+use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Model\Entity\UserModel;
-use App\Repository\UserRepositoryImplemented;
 use App\Model\ValuableObject\Email;
 use App\Model\ValuableObject\Password;
 use App\Service\AuthService;
 
-class AuthController extends BaseControllerImplemented
+class AuthControllerImplemented implements AuthControllerInterface
 {
     protected Response $response;
     protected UserModel $userModel;
-    protected UserRepositoryImplemented $userRepository;
+    protected UserRepositoryInterface $userRepository;
 
-    public function __construct(Response $response, UserRepositoryImplemented $userRepository)
+    public function __construct(Response $response, UserRepositoryInterface $userRepository)
     {
         $this->response = $response;
         $this->userRepository = $userRepository;
     }
 
-    public function index(): void
+    public function view(): void
     {
         $this->response->sendView('auth/login');
     }
@@ -33,7 +34,7 @@ class AuthController extends BaseControllerImplemented
         $this->response->sendJson(['isAuthenticated' => false]);
     }
 
-    public function validateCredentials(Request $request)
+    public function validateCredentials(Request $request): void
     {
         try {
 
@@ -50,14 +51,13 @@ class AuthController extends BaseControllerImplemented
                 throw new \Exception("Invalid credentials.");
             }
 
-            return true;
 
         } catch (\Throwable $th) {
             throw new \Exception("Erro ao fazer login: " . $th->getMessage());
         }
     }
 
-    public function logout()
+    public function logout(): void
     {
         // Implemente aqui a lógica para realizar o logout
     }

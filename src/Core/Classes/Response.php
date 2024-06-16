@@ -9,8 +9,8 @@ class Response
 {
     protected string $status;
     protected string $statusCode;
-    protected array $data;
-    protected string $message;
+    protected array $data = [];
+    protected string $message = '';
 
     public function message(string $message): Response 
     {
