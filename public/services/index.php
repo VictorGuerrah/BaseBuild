@@ -2,10 +2,10 @@
 
 use App\Core\Routing\Router;
 use App\Core\Classes\HTTP;
+use App\Core\Classes\Autowired;
 
 include_once dirname(__FILE__, 3) . '/config/configuration.php';
 include_once dirname(__FILE__, 3) . '/config/routes.php';
-
 
 $container = include_once dirname(__FILE__, 3) . '/config/bootstrap.php';
 
@@ -24,9 +24,10 @@ try {
     }
 
     $controller = $container->get($route->class);
-    $result = $controller->{$route->action}();
+    $autowired = new Autowired($route->class, $container);
+    $result = $autowired->call($route->action);
+
     echo $result;
-    
 } catch (Exception $e) {
     HTTP::sendResponse($e->getCode(), $e->getMessage());
 }

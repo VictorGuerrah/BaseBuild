@@ -10,10 +10,12 @@ class Autowired
     private string $myClass;
     private object $instance;
     private ReflectionClass $reflectionClass;
+    private Container $container;
 
-    public function __construct(string $myClass)
+    public function __construct(string $myClass, Container $container)
     {
         $this->myClass = $myClass;
+        $this->container = $container;
         $this->reflectionClass = new ReflectionClass($myClass);
         $this->callConstructor();
     }
@@ -32,7 +34,7 @@ class Autowired
         $methodReflection = $this->getMethod($method);
         $dependencies = $this->getDependencies($method);
 
-        return $methodReflection->invokeArgs($this->instance, array_merge($dependencies, $parameters));
+        return $methodReflection->invokeArgs($this->instance, $dependencies);
     }
 
     protected function getMethod(string $method): \ReflectionMethod
@@ -59,31 +61,34 @@ class Autowired
     }
 
     private function getDependencies(string $method): array
-{
-    $dependencies = $this->getMethod($method)->getParameters();
-    $resolvedDependencies = [];
+    {
+        $dependencies = $this->getMethod($method)->getParameters();
+        $resolvedDependencies = [];
 
-    foreach ($dependencies as $dependency) {
-        $dependencyType = $dependency->getType();
+        foreach ($dependencies as $dependency) {
+            $dependencyType = $dependency->getType();
 
-        if ($dependencyType && !$dependencyType->isBuiltin()) {
-            $className = $dependencyType->getName();
-            $autowired = new self($className);
-            $resolvedDependencies[$dependency->name] = $autowired->getInstance();
-        } elseif (isset($_REQUEST[$dependency->name])) {
-            $resolvedDependencies[$dependency->name] = $_REQUEST[$dependency->name];
-        } elseif ($return = $this->json($dependency->name)) {
-            $resolvedDependencies[$dependency->name] = $return;
-        } elseif ($return = $this->phpInput($dependency->name)) {
-            $resolvedDependencies[$dependency->name] = $return;
-        } else {
-            $resolvedDependencies[$dependency->name] = null;
+            if ($dependencyType && !$dependencyType->isBuiltin()) {
+                $className = $dependencyType->getName();
+                if ($this->container->has($className)) {
+                    $resolvedDependencies[$dependency->name] = $this->container->get($className);
+                } else {
+                    $autowired = new self($className, $this->container);
+                    $resolvedDependencies[$dependency->name] = $autowired->getInstance();
+                }
+            } elseif (isset($_REQUEST[$dependency->name])) {
+                $resolvedDependencies[$dependency->name] = $_REQUEST[$dependency->name];
+            } elseif ($return = $this->json($dependency->name)) {
+                $resolvedDependencies[$dependency->name] = $return;
+            } elseif ($return = $this->phpInput($dependency->name)) {
+                $resolvedDependencies[$dependency->name] = $return;
+            } else {
+                $resolvedDependencies[$dependency->name] = null;
+            }
         }
+
+        return $resolvedDependencies;
     }
-
-    return $resolvedDependencies;
-}
-
 
     private function phpInput(string $key): mixed
     {
@@ -97,8 +102,8 @@ class Autowired
         return $json[$key] ?? null;
     }
 
-    public static function make(string $myClass): object
+    public static function make(string $myClass, Container $container): object
     {
-        return (new self($myClass))->getInstance();
+        return (new self($myClass, $container))->getInstance();
     }
 }

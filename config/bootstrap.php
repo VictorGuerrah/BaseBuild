@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Classes\Container;
+use App\Core\Classes\Autowired;
 
 $container = new Container();
 
@@ -14,16 +15,12 @@ function registerClassesRecursively(Container $container, string $baseDir, strin
     $iterator = new RecursiveIteratorIterator($directoryIterator);
     $phpFiles = new RegexIterator($iterator, '/\.php$/');
 
-    $ignoreClasses = [
-        "App\\Core\\Helper\\Util"
-    ];
-
     foreach ($phpFiles as $file) {
         $filePath = $file->getRealPath();
         $relativePath = str_replace([$baseDir, '/', '.php'], ['', '\\', ''], $filePath);
         $className = $namespacePrefix . $relativePath;
 
-        if (in_array($className, $ignoreClasses)) {
+        if ($className === "App\\Core\\Helper\\Util") {
             continue;
         }
 
@@ -36,33 +33,11 @@ function registerClassesRecursively(Container $container, string $baseDir, strin
 
             $interfaces = $reflectionClass->getInterfaces();
             foreach ($interfaces as $interface) {
-                $container->bind($interface->getName(), fn($container) => $container->get($className));
+                $container->bind($interface->getName(), fn($container) => Autowired::make($className, $container));
             }
 
-            $container->bind($className, function ($container) use ($className, $reflectionClass) {
-                $constructor = $reflectionClass->getConstructor();
-
-                if ($constructor === null) {
-                    return new $className();
-                }
-
-                $parameters = [];
-                foreach ($constructor->getParameters() as $parameter) {
-                    $dependency = $parameter->getType();
-                    if ($dependency === null || $dependency->isBuiltin()) {
-                        if ($parameter->isOptional()) {
-                            $parameters[] = $parameter->getDefaultValue();
-                        } else {
-                            throw new Exception("Cannot resolve dependency for {$parameter->getName()} in $className.");
-                        }
-                    } elseif ($dependency instanceof ReflectionNamedType) {
-                        $parameters[] = $container->get($dependency->getName());
-                    } else {
-                        throw new Exception("Unsupported parameter type for {$parameter->getName()} in $className.");
-                    }
-                }
-
-                return $reflectionClass->newInstanceArgs($parameters);
+            $container->bind($className, function ($container) use ($className) {
+                return Autowired::make($className, $container);
             });
         } catch (ReflectionException $e) {
             error_log("Error loading class $className: " . $e->getMessage());
