@@ -6,62 +6,73 @@ $container = new Container();
 
 function registerClassesRecursively(Container $container, string $baseDir, string $namespacePrefix): void
 {
-    $files = glob($baseDir . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
+    if (!is_dir($baseDir)) {
+        throw new InvalidArgumentException("Base directory $baseDir does not exist or is not a directory.");
+    }
 
-    foreach ($files as $dir) {
-        $namespace = $namespacePrefix . '\\' . basename($dir);
+    $directoryIterator = new RecursiveDirectoryIterator($baseDir);
+    $iterator = new RecursiveIteratorIterator($directoryIterator);
+    $phpFiles = new RegexIterator($iterator, '/\.php$/');
 
-        foreach (glob($dir . '/*.php') as $file) {
-            $className = $namespace . '\\' . pathinfo($file, PATHINFO_FILENAME);
-            if ($className === "App\Core\Helper\Util") {
+    $ignoreClasses = [
+        "App\\Core\\Helper\\Util"
+    ];
+
+    foreach ($phpFiles as $file) {
+        $filePath = $file->getRealPath();
+        $relativePath = str_replace([$baseDir, '/', '.php'], ['', '\\', ''], $filePath);
+        $className = $namespacePrefix . $relativePath;
+
+        if (in_array($className, $ignoreClasses)) {
+            continue;
+        }
+
+        try {
+            $reflectionClass = new ReflectionClass($className);
+
+            if ($reflectionClass->isInterface() || $reflectionClass->isAbstract()) {
                 continue;
             }
 
-            // Use try-catch to handle exceptions when loading class or creating reflection
-            try {
-                $reflectionClass = new ReflectionClass($className);
+            $interfaces = $reflectionClass->getInterfaces();
+            foreach ($interfaces as $interface) {
+                $container->bind($interface->getName(), fn($container) => $container->get($className));
+            }
 
-                // Check if the class implements interfaces
-                $interfaces = $reflectionClass->getInterfaces();
-                foreach ($interfaces as $interface) {
-                    $interfaceName = $interface->getName();
-                    // Bind the interface to the concrete class
-                    $container->bind($interfaceName, function ($container) use ($className) {
-                        return $container->get($className);
-                    });
+            $container->bind($className, function ($container) use ($className, $reflectionClass) {
+                $constructor = $reflectionClass->getConstructor();
+
+                if ($constructor === null) {
+                    return new $className();
                 }
 
-                // Also bind the class itself
-                $container->bind($className, function ($container) use ($className) {
-                    $reflectionClass = new ReflectionClass($className);
-                    $constructor = $reflectionClass->getConstructor();
-
-                    if ($constructor === null) {
-                        return new $className();
-                    }
-
-                    $parameters = [];
-                    foreach ($constructor->getParameters() as $parameter) {
-                        $dependencyClass = $parameter->getType();
-                        if ($dependencyClass === null) {
+                $parameters = [];
+                foreach ($constructor->getParameters() as $parameter) {
+                    $dependency = $parameter->getType();
+                    if ($dependency === null || $dependency->isBuiltin()) {
+                        if ($parameter->isOptional()) {
+                            $parameters[] = $parameter->getDefaultValue();
+                        } else {
                             throw new Exception("Cannot resolve dependency for {$parameter->getName()} in $className.");
                         }
-                        $parameters[] = $container->get($dependencyClass->getName());
+                    } elseif ($dependency instanceof ReflectionNamedType) {
+                        $parameters[] = $container->get($dependency->getName());
+                    } else {
+                        throw new Exception("Unsupported parameter type for {$parameter->getName()} in $className.");
                     }
+                }
 
-                    return $reflectionClass->newInstanceArgs($parameters);
-                });
-            } catch (ReflectionException $e) {
-                // Handle exception if class cannot be loaded or reflection fails
-                echo "Error loading class $className: " . $e->getMessage() . "\n";
-            }
+                return $reflectionClass->newInstanceArgs($parameters);
+            });
+        } catch (ReflectionException $e) {
+            error_log("Error loading class $className: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("Error resolving dependencies for $className: " . $e->getMessage());
         }
-
-        registerClassesRecursively($container, $dir, $namespace);
     }
 }
 
-$baseDir = dirname(__FILE__, 2) . '/src';
+$baseDir = dirname(__DIR__) . '/src';
 registerClassesRecursively($container, $baseDir, 'App');
 
 return $container;

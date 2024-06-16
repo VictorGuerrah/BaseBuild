@@ -6,6 +6,7 @@ use App\Interfaces\ContainerInterface;
 
 use ReflectionClass;
 use Exception;
+use ReflectionException;
 
 class Container implements ContainerInterface
 {
