@@ -5,7 +5,7 @@ var View = {
                 View.load('dashboard/index', '.container', function() {
                 });
             } else {
-                View.load('auth/login', 'body', function() {
+                View.load('auth/view-login', 'body', function() {
                 });
             }
         });
@@ -25,11 +25,11 @@ var View = {
     },
 
     checkAuth: function(callback) {
-        HTTP.post('auth/checkAuthentication', {}, false, function(responseText) {
+        HTTP.post('auth/check-authentication', {}, false, function(responseText) {
             try {
-                let responseObj = JSON.parse(responseText);
-                if (responseObj.isAuthenticated !== undefined) {
-                    callback(responseObj.isAuthenticated);
+                let response = JSON.parse(responseText);
+                if (response.isAuthenticated !== undefined) {
+                    callback(response.isAuthenticated);
                 } else {
                     console.error('Something went wrong.')
                     callback(false);

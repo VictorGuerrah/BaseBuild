@@ -6,25 +6,9 @@ class HTTP
 {
     public static $_POST;
 
-    public static function sendResponseJson(string|array $body = '', int $status = 200): string
+    public static function getStatusCodeMessage(int $status): string
     {
-        $body = json_encode($body);
-        $statusHeader = 'HTTP/1.1 ' . $status . ' ' . self::getStatusCodeMessage($status);
-        self::setHeaders([
-            $statusHeader,
-            'Content-Type: application/json'
-        ]);
-
-        if (ob_get_contents()) {
-            ob_clean();
-        }
-
-        return $body;
-    }
-
-    private static function getStatusCodeMessage(int $status): string
-    {
-        $statusCodes = self::getStatusCode();
+        $statusCodes = self::getStatusCodes();
         return $statusCodes[$status] ?? 'Unknown Status Code';
     }
 
@@ -46,7 +30,7 @@ class HTTP
         self::$_POST = $content;
     }
 
-    public static function getStatusCode(int $statusCode = 0): array|string
+    public static function getStatusCodes(): array|string
     {
         $statusCodes = [
             100 => 'Continue',
@@ -91,10 +75,6 @@ class HTTP
             504 => 'Gateway Timeout',
             505 => 'HTTP Version Not Supported'
         ];
-
-        if ($statusCode != 0) {
-            return $statusCodes[$statusCode];
-        }
 
         return $statusCodes;
     }

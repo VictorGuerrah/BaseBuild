@@ -1,11 +1,15 @@
 <div class="login-container">
     <h2>Login</h2>
-    <form action="process_login.php" method="post">
-        <input type="text" name="username" placeholder="Usuário" required>
-        <input type="password" name="password" placeholder="Senha" required>
-        <input type="submit" value="Entrar">
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" placeholder="teste@email.com" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="123456" required>
+        </div>
+        <button type="button" class="login-btn" onclick="Auth.validateCredentials()">Enter</button>
+        <a href="#" class="forgot-password">Esqueceu a senha?</a>
     </form>
-    <?php if (isset($_GET['error'])): ?>
-        <div class="error-message">Usuário ou senha inválidos.</div>
-    <?php endif; ?>
 </div>

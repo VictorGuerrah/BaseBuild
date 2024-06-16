@@ -2,38 +2,43 @@
 
 namespace App\Controller;
 
-use App\Core\Classes\Response;
 use App\Core\Classes\Request;
+use App\Core\Classes\Response;
 use App\Model\Entity\UserModel;
 use App\Repository\UserRepositoryImplemented;
 use App\Model\ValuableObject\Email;
 use App\Model\ValuableObject\Password;
+use App\Service\AuthService;
 
 class AuthController extends BaseControllerImplemented
 {
+    protected Response $response;
     protected UserModel $userModel;
     protected UserRepositoryImplemented $userRepository;
 
     public function __construct(Response $response, UserRepositoryImplemented $userRepository)
     {
+        $this->response = $response;
         $this->userRepository = $userRepository;
     }
 
     public function index(): void
     {
-        response()->view('auth/login');
+        $this->response->sendView('auth/login');
     }
 
-    public function checkAuthentication(): string
+    public function checkAuthentication(): void
     {
-        return $this->responseJson(['isAuthenticated' => false]);
+
+        $this->response->sendJson(['isAuthenticated' => false]);
     }
 
-    public function login(array $credentials)
+    public function validateCredentials(Request $request)
     {
         try {
-            $email = new Email($credentials['email']);
-            $password = new Password($credentials['password']);
+
+            $email = new Email($request->get('email'));
+            $password = new Password($request->get('password'));
 
             $user = $this->userRepository->getByEmail($email);
 

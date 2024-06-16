@@ -4,7 +4,6 @@ namespace App\Core\Classes;
 
 use ReflectionClass;
 use Exception;
-use PDO;
 
 class Autowired
 {

@@ -18,29 +18,31 @@ class Response
         return $this;
     }
 
-    public function json(array $data = [], int $statusCode = 200): void
+    public function sendJson(array|string $data = '', int $statusCode = 200): void
     {
         $this->statusCode = $statusCode;
         $this->data = $data;
         $body = json_encode($this->getData());
+
         HTTP::setHeaders([
             200,
             "Content-type: application/json"
         ]);
+
         $this->output($body);
     }
 
     private function getData()
     {
         return [
-            'status' => HTTP::getStatusCode($this->statusCode),
+            'status' => HTTP::getStatusCodeMessage($this->statusCode),
             'statusCode' => $this->statusCode,
             'data' => $this->data,
             'message' => $this->message
         ];
     }
 
-    public function view(string $path, array $data = []): void
+    public function sendView(string $path, array $data = []): void
     {
         $body = View::load($path, $data);
         HTTP::setHeaders([

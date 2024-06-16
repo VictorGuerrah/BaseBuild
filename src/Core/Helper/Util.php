@@ -1,8 +1,10 @@
 <?php
 
-use App\Core\Classes\Response;
+namespace App\Core\Classes;
 
-function asset(string $path): void
+class Util 
+{
+    public function asset(string $path): void
 {
     $file = BASE_PUBLIC . 'assets/' . ($path[0] == '/' ? mb_substr($path, 1) : $path);
     if (!file_exists($file)) {
@@ -11,8 +13,4 @@ function asset(string $path): void
     $relativePath = 'assets/' . ($path[0] == '/' ? mb_substr($path, 1) : $path);
     echo $relativePath;
 }
-
-function response()
-{
-    return new Response();
 }
