@@ -4,24 +4,32 @@ namespace App\Model\ValuableObject;
 
 class Password
 {
-    public readonly string $passwordHash;
+    private string $value;
+    private string $hash;
 
     public function __construct(string $value)
     {
-        $this->passwordHash = password_hash($value, PASSWORD_DEFAULT);
+        // $this->validatePasswordStrength($value);
+        $this->value = $value;
+        $this->hash = password_hash($value, PASSWORD_DEFAULT);
     }
 
-    public function __toString(): string
+    public function getHash(): string
     {
-        return $this->passwordHash;
+        return $this->hash;
     }
 
-    public function verify($valueToVerify): bool
+    public function getValue(): string
     {
-        return password_verify($this->passwordHash, $valueToVerify);
+        return $this->value;
     }
 
-    private function validatePasswordStrength(string $value): bool 
+    public function verify(string $hashedPassword): bool
+    {
+        return password_verify($this->value, $hashedPassword);
+    }    
+
+    private function validatePasswordStrength(string $value): void 
     {
         if (strlen($value) < 8) {
             throw new \Exception("Password must be at least 8 characters long.");
@@ -42,7 +50,5 @@ class Password
         if (!preg_match('/[!@#$%^&*()\-_=+{};:,<.>]/', $value)) {
             throw new \Exception("Password must contain at least one special character.");
         }
-    
-        return true;
     }
 }

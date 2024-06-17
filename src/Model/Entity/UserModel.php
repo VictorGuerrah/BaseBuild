@@ -10,13 +10,13 @@ class UserModel
 {
     public ID $id;
     public Email $email;
-    public Password $passwordHash;
+    private string $passwordHash;
 
-    public function __construct(Email $email, string $password)
+    public function __construct(Email $email, string $passwordHash)
     {
         $this->id = new ID();
         $this->email = $email;
-        $this->passwordHash = new Password($password);
+        $this->passwordHash = $passwordHash;
     }
 
     public function getID(): string
@@ -31,6 +31,6 @@ class UserModel
 
     public function getPasswordHash(): string
     {
-        return (string) $this->passwordHash;
+        return $this->passwordHash;
     }
 }

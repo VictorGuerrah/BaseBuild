@@ -31,7 +31,6 @@ var View = {
                 if (response.isAuthenticated !== undefined) {
                     callback(response.isAuthenticated);
                 } else {
-                    console.error('Something went wrong.')
                     callback(false);
                 }
             } catch (e) {

@@ -42,7 +42,7 @@ class UserRepositoryImplemented implements UserRepositoryInterface
 
             $stmt = Connection::prepare($sql);
             Connection::execute($stmt, $this->bindValues);
-            $result = $stmt->fetchAll();
+            $result = $stmt->fetch();
 
             if (!$result) {
                 return null;

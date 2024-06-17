@@ -18,18 +18,18 @@ class AuthService
     public function validateCredentials(string $email, string $password): bool
     {
         $email = new Email($email);
-        $password = new Password($password);
-
+    
         $user = $this->userRepository->getByEmail($email);
-
+    
         if (!$user) {
             return false;
         }
-
-        if (!$password->verify($user->getPasswordHash())) {
+    
+        $passwordObject = new Password($password);
+        if (!$passwordObject->verify($user->getPasswordHash())) {
             return false;
         }
-
+    
         return true;
     }
 }
