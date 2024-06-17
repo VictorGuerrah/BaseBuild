@@ -6,15 +6,15 @@ use App\Core\Classes\Request;
 use App\Core\Classes\Response;
 use App\Core\Classes\Validator;
 use App\Interfaces\Controller\AuthControllerInterface;
-use App\Service\AuthService;
+use App\Interfaces\Service\AuthServiceInterface;
 
 class AuthControllerImplemented implements AuthControllerInterface
 {
     protected Response $response;
     protected Validator $validator;
-    protected AuthService $authService;
+    protected AuthServiceInterface $authService;
 
-    public function __construct(Response $response, AuthService $AuthService, Validator $validator)
+    public function __construct(Response $response, AuthServiceInterface $AuthService, Validator $validator)
     {
         $this->response = $response;
         $this->validator = $validator;
@@ -44,7 +44,9 @@ class AuthControllerImplemented implements AuthControllerInterface
         }
 
         try {
-            if ($this->authService->validateCredentials($request->get('email'), $request->get('password'))) {
+            $userId = $this->authService->validateCredentials($request->get('email'), $request->get('password'));
+            if (!empty($userId)) {
+                $this->authService->setCookies($userId);
                 $this->response->sendJson(['isValidated' => true]);
             }
 

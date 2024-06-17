@@ -2,9 +2,11 @@
 
 namespace App\Service;
 
-class ViewService
+use App\Interfaces\Service\ViewServiceInterface;
+
+class ViewServiceImplemented implements ViewServiceInterface
 {
-    public static function load(string $path)
+    public static function load(string $path): void
     {
         $fullPath = dirname(__FILE__, 3) . '/views/' . $path . '.php';
         if (!file_exists($fullPath)) {

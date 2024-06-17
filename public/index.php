@@ -2,6 +2,7 @@
 
 require_once dirname(__FILE__, 2) . '/config/configuration.php';
 
-use App\Service\ViewService;
+use App\Interfaces\Service\ViewServiceInterface;
+use App\Service\ViewServiceImplemented;
 
-ViewService::load('index');
+ViewServiceImplemented::load('index');

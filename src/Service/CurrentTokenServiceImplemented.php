@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
-class CurrentTokenService
+use App\Interfaces\Service\CurrentTokenServiceInterface;
+
+class CurrentTokenServiceImplemented implements CurrentTokenServiceInterface
 {
     public function __construct()
     {
