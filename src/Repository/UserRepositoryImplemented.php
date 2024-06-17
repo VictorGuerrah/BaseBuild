@@ -38,7 +38,7 @@ class UserRepositoryImplemented implements UserRepositoryInterface
         $sql = 'SELECT Email, Password FROM users WHERE Email=?';
 
         try {
-            $this->bindValues[] = $email();
+            $this->bindValues[] = $email;
 
             $stmt = Connection::prepare($sql);
             Connection::execute($stmt, $this->bindValues);

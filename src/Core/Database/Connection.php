@@ -45,7 +45,7 @@ class Connection
         }
 
         // $credentials = self::getCredentials();
-        $connection = "mysql:host='localhost;dbname=my_database'";
+        $connection = "mysql:host=mysql;dbname=my_database";
 
         try {
             self::$pdo = new PDO($connection, 'my_user', 'my_password', self::OPTIONS);

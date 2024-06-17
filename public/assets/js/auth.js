@@ -4,7 +4,11 @@ var Auth = {
         HTTP.post('auth/validate-credentials', parameters, false, function(responseText) {
             try {
                 let response = JSON.parse(responseText);
-                console.log(response);
+                if (response.isValidated !== undefined) {
+                    alert('Access accepted!')
+                } else {
+                    alert('Access denied!')
+                }
             } catch (e) {
                 console.error('Something went wrong:', e);
                 callback(false);

@@ -5,22 +5,19 @@ namespace App\Controller;
 use App\Core\Classes\Request;
 use App\Core\Classes\Response;
 use App\Interfaces\Controller\AuthControllerInterface;
-use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Model\Entity\UserModel;
-use App\Model\ValuableObject\Email;
-use App\Model\ValuableObject\Password;
 use App\Service\AuthService;
 
 class AuthControllerImplemented implements AuthControllerInterface
 {
     protected Response $response;
     protected UserModel $userModel;
-    protected UserRepositoryInterface $userRepository;
+    protected AuthService $authService;
 
-    public function __construct(Response $response, UserRepositoryInterface $userRepository)
+    public function __construct(Response $response, AuthService $AuthService)
     {
         $this->response = $response;
-        $this->userRepository = $userRepository;
+        $this->authService = $AuthService;
     }
 
     public function view(): void
@@ -36,24 +33,19 @@ class AuthControllerImplemented implements AuthControllerInterface
 
     public function validateCredentials(Request $request): void
     {
+        $request->validate([
+            'email' => 'required|email|string', 
+            'password' => 'required|string'
+        ]);
         try {
-
-            $email = new Email($request->get('email'));
-            $password = new Password($request->get('password'));
-
-            $user = $this->userRepository->getByEmail($email);
-
-            if (!$user) {
-                throw new \Exception("Invalid credentials.");
+            if ($this->authService->validateCredentials($request->get('email'), $request->get('password'))) {
+                $this->response->sendJson(['isValidated' => true]);
             }
 
-            if (!$password->verify($user->getPasswordHash())) {
-                throw new \Exception("Invalid credentials.");
-            }
-
+            $this->response->sendJson(['isValidated' => false]);
 
         } catch (\Throwable $th) {
-            throw new \Exception("Erro ao fazer login: " . $th->getMessage());
+            throw new \Exception("Credentials error: " . $th->getMessage());
         }
     }
 
