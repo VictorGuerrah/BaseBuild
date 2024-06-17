@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Core\Database\Connection;
-use App\Model\Entity\UserModel;
+use App\Interfaces\Model\UserModelInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 
 class UserRepositoryImplemented implements UserRepositoryInterface
@@ -13,10 +14,9 @@ class UserRepositoryImplemented implements UserRepositoryInterface
 
     public function __construct()
     {
-
     }
 
-    public function insert(UserModel $user): void
+    public function insert(UserModelInterface $user): void
     {
         $sql = 'INSERT INTO users (id, email, password) VALUES (?, ?, ?)';
 
@@ -27,13 +27,12 @@ class UserRepositoryImplemented implements UserRepositoryInterface
 
             $stmt = Connection::prepare($sql);
             Connection::execute($stmt, $this->bindValues);
-
         } catch (\Throwable $th) {
             throw new \Exception("Failed to insert user: " . $th->getMessage());
         }
     }
 
-    public function getByEmail(string $email): ?UserModel
+    public function getByEmail(string $email): ?UserModelInterface
     {
         $sql = 'SELECT Email, Password FROM users WHERE Email=?';
 

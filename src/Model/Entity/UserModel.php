@@ -2,19 +2,19 @@
 
 namespace App\Model\Entity;
 
+use App\Interfaces\Model\UserModelInterface;
 use App\Model\ValuableObject\ID;
 use App\Model\ValuableObject\Email;
-use App\Model\ValuableObject\Password;
 
-class UserModel
+class UserModel implements UserModelInterface
 {
-    public ID $id;
-    public Email $email;
+    private string $id;
+    private Email $email;
     private string $passwordHash;
 
     public function __construct(Email $email, string $passwordHash)
     {
-        $this->id = new ID();
+        $this->id = (new ID())->getValue();
         $this->email = $email;
         $this->passwordHash = $passwordHash;
     }

@@ -3,7 +3,6 @@ var Auth = {
         let parameters = $('#login-form').serializeArray();
         HTTP.post('auth/validate-credentials', parameters, false, function(responseText) {
             try {
-                debugger
                 let response = JSON.parse(responseText).data;
                 if (response.isValidated === true) {
                     alert('Access accepted!')

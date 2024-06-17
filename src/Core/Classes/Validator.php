@@ -40,7 +40,7 @@ class Validator
             }
 
             $options = explode(":", $validate);
-            $result = count($options) > 1 
+            $result = count($options) > 1
                 ? $this->validateValue($field, $options[0], $value, $options[1])
                 : $this->validateValue($field, $options[0], $value);
 
@@ -128,7 +128,7 @@ class Validator
         return $this->errors;
     }
 
-    protected function sanitizeInput(string $string): bool
+    public function sanitizeInput(string $string): bool
     {
         $string = trim($string);
 

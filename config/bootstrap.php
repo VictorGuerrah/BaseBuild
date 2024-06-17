@@ -20,7 +20,7 @@ function registerClassesRecursively(Container $container, string $baseDir, strin
         $relativePath = str_replace([$baseDir, '/', '.php'], ['', '\\', ''], $filePath);
         $className = $namespacePrefix . $relativePath;
 
-        if ($className === "App\\Core\\Helper\\Util") {
+        if ($className === "App\\Core\\Classes\\Util") {
             continue;
         }
 
@@ -31,10 +31,10 @@ function registerClassesRecursively(Container $container, string $baseDir, strin
                 continue;
             }
 
-            $container->bind($className, fn($container) => Autowired::make($className, $container));
+            $container->bind($className, fn ($container) => Autowired::make($className, $container));
 
             foreach ($reflectionClass->getInterfaces() as $interface) {
-                $container->bind($interface->getName(), fn($container) => $container->get($className));
+                $container->bind($interface->getName(), fn ($container) => $container->get($className));
             }
         } catch (ReflectionException $e) {
             error_log("Error loading class $className: " . $e->getMessage());
