@@ -2,6 +2,7 @@
 
 namespace App\Core\Database;
 
+use App\Core\Classes\Environment;
 use PDO;
 use PDOStatement;
 
@@ -44,17 +45,28 @@ class Connection
             return self::$pdo;
         }
 
-        // $credentials = self::getCredentials();
-        $connection = "mysql:host=mysql;dbname=my_database";
+        $credentials = self::getCredentials();
+        $connection = "mysql:host={$credentials['host']};dbname={$credentials['name']}";
 
         try {
-            self::$pdo = new PDO($connection, 'my_user', 'my_password', self::OPTIONS);
+            self::$pdo = new PDO($connection, $credentials['user'], $credentials['password'], self::OPTIONS);
             self::$lastQueryTime = time();
             
             return self::$pdo; 
         } catch (\PDOException $ex) {
             throw new \PDOException("Database error." . $ex->getMessage());
         }
+    }
+
+    private static function getCredentials(): array 
+    {
+        return [        
+            'host' => Environment::get('DATABASE_HOST'),
+            'name' => Environment::get('DATABASE_NAME'),
+            'user' => Environment::get('DATABASE_USER'),
+            'password' => Environment::get('DATABASE_PASSWORD')
+        ];
+        
     }
 
 }

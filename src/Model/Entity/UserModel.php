@@ -12,9 +12,9 @@ class UserModel implements UserModelInterface
     private Email $email;
     private string $passwordHash;
 
-    public function __construct(Email $email, string $passwordHash)
+    public function __construct(Email $email, string $passwordHash, string $id = null)
     {
-        $this->id = (new ID())->getValue();
+        $this->id = $id ?? (new ID())->getValue();
         $this->email = $email;
         $this->passwordHash = $passwordHash;
     }

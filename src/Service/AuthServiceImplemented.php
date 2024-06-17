@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Constants\AuthenticationPolicy;
+use App\Core\Classes\Environment;
 use App\Core\Classes\JWT;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\AuthServiceInterface;
@@ -48,7 +49,9 @@ class AuthServiceImplemented implements AuthServiceInterface
             'time' => time()
         ]);
 
-        $token = JWT::create('', $keepLoggedInUntil);
+        $infoEncrypted = openssl_encrypt($info, Environment::get('COOKIES_ENCRYPT_TYPE'), Environment::get('COOKIES_ENCRYPT_KEY'));
+
+        $token = JWT::create($infoEncrypted, $keepLoggedInUntil);
         $tokenHash = password_hash($token, PASSWORD_BCRYPT);
 
         $this->currentTokenService->save($userID, $tokenHash);

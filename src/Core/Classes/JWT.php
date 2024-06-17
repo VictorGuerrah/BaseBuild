@@ -29,6 +29,6 @@ class JWT
 
     private static function getKey(): string
     {
-        return '!ih.s6AxhpvPv!7AnHfkCZh4XG2XoG-z';
+        return Environment::get('JWT_KEY');
     }
 }

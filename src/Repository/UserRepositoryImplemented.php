@@ -10,44 +10,40 @@ use App\Model\ValuableObject\Email;
 
 class UserRepositoryImplemented implements UserRepositoryInterface
 {
-    private array $bindValues = [];
-
-    public function __construct()
-    {
-    }
+    public function __construct() { }
 
     public function insert(UserModelInterface $user): void
     {
         $sql = 'INSERT INTO users (id, email, password) VALUES (?, ?, ?)';
 
         try {
-            $this->bindValues[] = $user->getID();
-            $this->bindValues[] = $user->getEmail();
-            $this->bindValues[] = $user->getPasswordHash();
-
             $stmt = Connection::prepare($sql);
-            Connection::execute($stmt, $this->bindValues);
+            $bindValues = [
+                $user->getID(),
+                $user->getEmail(),
+                $user->getPasswordHash()
+            ];
+            Connection::execute($stmt, $bindValues);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to insert user: " . $th->getMessage());
         }
     }
 
-    public function getByEmail(string $email): ?UserModelInterface
+    public function getByEmail(string $email): ?UserModel
     {
-        $sql = 'SELECT Email, Password FROM users WHERE Email=?';
+        $sql = 'SELECT ID, Email, Password FROM users WHERE Email=?';
 
         try {
-            $this->bindValues[] = $email;
-
             $stmt = Connection::prepare($sql);
-            Connection::execute($stmt, $this->bindValues);
+            $bindValues = [$email];
+            Connection::execute($stmt, $bindValues);
             $result = $stmt->fetch();
 
             if (!$result) {
                 return null;
             }
 
-            $user = new UserModel(new Email($result['Email']), $result['Password']);
+            $user = new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
 
             return $user;
         } catch (\Throwable $th) {
