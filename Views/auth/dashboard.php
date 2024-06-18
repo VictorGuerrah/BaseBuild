@@ -1,28 +1,35 @@
 <div class="dashboard">
-    <div class="sidebar">
-        <h2>Dashboard</h2>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Usuários</a></li>
-            <li><a href="#">Produtos</a></li>
-            <li><a href="#">Configurações</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-        <h2>Visão Geral</h2>
-        <div class="overview">
-            <div class="card">
-                <h3>Total de Usuários</h3>
-                <p>1500</p>
-            </div>
-            <div class="card">
-                <h3>Total de Produtos</h3>
-                <p>350</p>
-            </div>
-            <div class="card">
-                <h3>Total de Vendas</h3>
-                <p>R$ 25.000,00</p>
-            </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
         </div>
-    </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a>Dashboard</a></li>
+                <li><a>Profile</a></li>
+                <li><a>Settings</a></li>
+                <li><a>Reports</a></li>
+                <li><a onclick="Auth.logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <header class="main-header">
+            <h1>Welcome to the Dashboard</h1>
+        </header>
+        <section class="cards">
+            <div class="card">
+                <h3>Card 1</h3>
+                <p>Relevant information</p>
+            </div>
+            <div class="card">
+                <h3>Card 2</h3>
+                <p>More information</p>
+            </div>
+            <div class="card">
+                <h3>Card 3</h3>
+                <p>Other information</p>
+            </div>
+        </section>
+    </main>
 </div>

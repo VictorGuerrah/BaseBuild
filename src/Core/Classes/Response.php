@@ -18,7 +18,7 @@ class Response
         return $this;
     }
 
-    public function sendJson(array|string $data = '', int $statusCode = 200): void
+    public function sendJson(array|string $data = [], int $statusCode = 200): void
     {
         $this->statusCode = $statusCode;
         $this->data = $data;

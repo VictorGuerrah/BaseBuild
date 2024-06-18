@@ -2,11 +2,9 @@ var View = {
     index: function() {
         View.checkAuth(function(isAuthenticated) {
             if (isAuthenticated) {
-                View.load('auth/view-dashboard', 'body', function() {
-                });
+                View.load('auth/view-dashboard', '.container', function() {});
             } else {
-                View.load('auth/view-login', 'body', function() {
-                });
+                View.load('auth/view-login', '.container', function() {});
             }
         });
     },

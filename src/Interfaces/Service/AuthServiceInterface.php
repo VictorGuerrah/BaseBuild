@@ -11,4 +11,5 @@ interface AuthServiceInterface
     public function getCookies(): array;
     public function getLoggedUser(): ?UserModel;
     public function setLoggedUser(UserModel $user): void;
+    public function logout(): void;
 }

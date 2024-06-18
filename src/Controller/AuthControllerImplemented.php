@@ -79,6 +79,7 @@ class AuthControllerImplemented implements AuthControllerInterface
 
     public function logout(): void
     {
-        // Implemente aqui a lógica para realizar o logout
+        $this->authService->logout();
+        $this->response->sendJson();
     }
 }

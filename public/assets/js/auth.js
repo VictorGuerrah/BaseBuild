@@ -5,7 +5,7 @@ var Auth = {
             try {
                 let response = JSON.parse(responseText).data;
                 if (response.isValidated === true) {
-                    View.load('auth/view-dashboard', 'body', function() {
+                    View.load('auth/view-dashboard', '.container', function() {
                     });
                 } else {
                     alert('Access denied!')
@@ -18,5 +18,16 @@ var Auth = {
             console.error('Something went wrong:', error);
             callback(false);
         });
-    }
+    },
+
+    logout: function () {
+        HTTP.post('auth/logout', null, false, function() {
+            View.load('auth/view-login', '.container', function() {});
+        }, function(error) {
+            console.error('Something went wrong:', error);
+            callback(false);
+        });
+    },
+
+
 }

@@ -75,50 +75,52 @@ class AuthServiceImplemented implements AuthServiceInterface
     }
 
     public function getCookies(): array
-{
-    if (!isset($_COOKIE[self::SESSION_IDENTIFIER])) {
-        return [];
-    }
-
-    $token = $_COOKIE[self::SESSION_IDENTIFIER];
-
-    try {
-        $payload = JWT::read($token);
-
-        $payload['data'] = $this->decryptInfo($payload['data']);
-
-        $info = json_decode($payload['data'], true);
-        if ($info === null || json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Invalid JSON data in info.");
+    {
+        if (!isset($_COOKIE[self::SESSION_IDENTIFIER])) {
+            return [];
         }
 
-        return [
-            'info' => $info,
-            'token' => $token
-        ];
+        $token = $_COOKIE[self::SESSION_IDENTIFIER];
 
-    } catch (Exception $e) {
-        throw new Exception("Invalid token: " . $e->getMessage());
+        try {
+            $payload = JWT::read($token);
+
+            $payload['data'] = $this->decryptInfo($payload['data']);
+
+            $info = json_decode($payload['data'], true);
+            if ($info === null || json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Invalid JSON data in info.");
+            }
+
+            return [
+                'info' => $info,
+                'token' => $token
+            ];
+        } catch (Exception $e) {
+            throw new Exception("Invalid token: " . $e->getMessage());
+        }
     }
-}
 
-private function decryptInfo(string $encryptedData): ?string
-{
-    $decryptedData = openssl_decrypt($encryptedData, Environment::get('COOKIES_ENCRYPT_TYPE'), Environment::get('COOKIES_ENCRYPT_KEY'));
-    if ($decryptedData === false) {
-        return null;
+    private function decryptInfo(string $encryptedData): ?string
+    {
+        $decryptedData = openssl_decrypt($encryptedData, Environment::get('COOKIES_ENCRYPT_TYPE'), Environment::get('COOKIES_ENCRYPT_KEY'));
+        if ($decryptedData === false) {
+            return null;
+        }
+        return $decryptedData;
     }
-    return $decryptedData;
-}
 
-private function encryptInfo(string $info): ?string
-{
-    $encryptedInfo = openssl_encrypt($info, Environment::get('COOKIES_ENCRYPT_TYPE'), Environment::get('COOKIES_ENCRYPT_KEY'));
-    if ($encryptedInfo === false) {
-        return null;
+    private function encryptInfo(string $info): ?string
+    {
+        $encryptedInfo = openssl_encrypt($info, Environment::get('COOKIES_ENCRYPT_TYPE'), Environment::get('COOKIES_ENCRYPT_KEY'));
+        if ($encryptedInfo === false) {
+            return null;
+        }
+        return $encryptedInfo;
     }
-    return $encryptedInfo;
-}
 
-
+    public function logout(): void
+    {
+        Cookies::delete(self::SESSION_IDENTIFIER);
+    }
 }
