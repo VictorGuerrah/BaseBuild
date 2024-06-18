@@ -16,7 +16,7 @@ class JWT
         $payload = [];
         $payload['iat'] = time();
         $payload['iss'] = self::$iss;
-        $payload['expire'] = $keepLoggedInUntil;
+        $payload['exp'] = $keepLoggedInUntil;
         $payload['data'] = $content;
 
         $base64Payload = base64_encode(json_encode($payload));
@@ -62,7 +62,7 @@ class JWT
             throw new Exception("Invalid token");
         }
 
-        if (time() > $payload['expire']) {
+        if (time() > $payload['exp']) {
             throw new Exception("Token has expired");
         }
 

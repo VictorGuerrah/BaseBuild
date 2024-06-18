@@ -41,16 +41,17 @@ class AuthServiceImplemented implements AuthServiceInterface
     public function validateCredentials(string $email, string $password): ?string
     {
         $email = new Email($email);
-
         $user = $this->userRepository->findByEmail($email);
 
-        if (!$user) {
+        if (is_null($user)) {
+            $invalidPassword = new Password(uniqid());
+            $invalidPassword->verify($password);
             return null;
         }
 
         $passwordObject = new Password($password);
         if (!$passwordObject->verify($user->getPasswordHash())) {
-            return false;
+            return null;
         }
 
         return $user->getID();

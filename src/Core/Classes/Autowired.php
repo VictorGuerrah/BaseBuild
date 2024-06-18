@@ -25,7 +25,7 @@ class Autowired
         return $this->instance;
     }
 
-    public function call(string $method, array $parameters = []): mixed
+    public function call(string $method): mixed
     {
         if ($method === '__construct') {
             throw new Exception("__construct cannot be called twice. Use getInstance() to retrieve the object.");

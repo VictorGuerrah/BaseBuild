@@ -6,11 +6,29 @@ class Cookies
 {
     public static function set(string $name, string $value, int $expires): void 
     {
-        setcookie($name, $value, $expires, '/', 'localhost', false, true);
+        $options = [
+            'expires' => $expires,
+            'path' => '/',      
+            'domain' => 'localhost',
+            'secure' => false,     
+            'httponly' => true,    
+            'samesite' => 'Strict' 
+        ];
+
+        setcookie($name, $value, $options);
     }
 
     public static function delete(string $name): void 
     {
-        setcookie($name, "", -1, '/', 'localhost', false, true);
+        $options = [
+            'expires' => time() - 3600,
+            'path' => '/',      
+            'domain' => 'localhost',
+            'secure' => false,     
+            'httponly' => true,    
+            'samesite' => 'Strict' 
+        ];
+        
+        setcookie($name, "", $options);
     }
 }

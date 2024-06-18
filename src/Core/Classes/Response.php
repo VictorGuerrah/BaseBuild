@@ -9,7 +9,7 @@ class Response
 {
     protected string $status;
     protected string $statusCode;
-    protected array $data = [];
+    protected array|string $data = [];
     protected string $message = '';
 
     public function message(string $message): Response 
