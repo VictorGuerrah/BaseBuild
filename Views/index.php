@@ -8,7 +8,6 @@
     <?php require('imports.php');?>
 </head>
 <body>
-    <div class="container"></div>
     <script>View.index()</script>
 </body>
 </html>

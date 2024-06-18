@@ -11,6 +11,6 @@ interface UserRepositoryInterface
     // public function delete(string $id): void;
 
     // public function getAll(): array;
-    public function getByEmail(string $email): ?UserModelInterface;
-    // public function getByID(ID $id): User;
+    public function findByEmail(string $email): ?UserModelInterface;
+    public function findById(string $id): ?UserModelInterface;
 }

@@ -7,29 +7,50 @@ use App\Core\Classes\Response;
 use App\Core\Classes\Validator;
 use App\Interfaces\Controller\AuthControllerInterface;
 use App\Interfaces\Service\AuthServiceInterface;
+use App\Interfaces\Service\CurrentTokenServiceInterface;
+use Exception;
 
 class AuthControllerImplemented implements AuthControllerInterface
 {
     protected Response $response;
     protected Validator $validator;
     protected AuthServiceInterface $authService;
+    protected CurrentTokenServiceInterface $currentTokenService;
 
-    public function __construct(Response $response, AuthServiceInterface $AuthService, Validator $validator)
+    public function __construct(Response $response, AuthServiceInterface $authService, Validator $validator, CurrentTokenServiceInterface $currentTokenService)
     {
         $this->response = $response;
         $this->validator = $validator;
-        $this->authService = $AuthService;
+        $this->authService = $authService;
+        $this->currentTokenService = $currentTokenService;
     }
 
-    public function view(): void
+    public function loginView(): void
     {
         $this->response->sendView('auth/login');
     }
 
+    public function dashboardView(): void
+    {
+        $this->response->sendView('auth/dashboard');
+    }
+
     public function checkAuthentication(): void
     {
-
-        $this->response->sendJson(['isAuthenticated' => false]);
+        try {
+            $authData = $this->authService->getCookies();
+            
+            if (empty($authData)) {
+                $this->response->sendJson(['isAuthenticated' => false]);
+            }
+        
+            $this->currentTokenService->checkToken($authData['info']['userID'], $authData['token']);
+            $this->response->sendJson(['isAuthenticated' => true]);
+        
+        } catch (Exception $ex) {
+            $this->response->sendJson(['isAuthenticated' => false]);
+        }
+        
     }
 
     public function validateCredentials(Request $request): void

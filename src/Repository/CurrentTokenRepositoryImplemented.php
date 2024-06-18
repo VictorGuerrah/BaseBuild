@@ -19,7 +19,7 @@ class CurrentTokenRepositoryImplemented implements CurrentTokenRepositoryInterfa
             $stmt = Connection::prepare($sql);
             $bindValues = [
                 $currentToken->getUserId(),
-                $currentToken->getTokenHash(),
+                $currentToken->getHash(),
                 $currentToken->isValid()
             ];
             Connection::execute($stmt, $bindValues);
@@ -35,7 +35,7 @@ class CurrentTokenRepositoryImplemented implements CurrentTokenRepositoryInterfa
         try {
             $stmt = Connection::prepare($sql);
             $bindValues = [
-                $currentToken->getTokenHash(),
+                $currentToken->getHash(),
                 $currentToken->isValid(),
                 $currentToken->getUserId()
             ];

@@ -5,7 +5,8 @@ var Auth = {
             try {
                 let response = JSON.parse(responseText).data;
                 if (response.isValidated === true) {
-                    alert('Access accepted!')
+                    View.load('auth/view-dashboard', 'body', function() {
+                    });
                 } else {
                     alert('Access denied!')
                 }

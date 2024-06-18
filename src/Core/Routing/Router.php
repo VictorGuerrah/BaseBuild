@@ -78,4 +78,26 @@ class Router
         }
         throw new Exception("Route not found.");
     }
+
+    public static function middleware(?string $middleware = null): Router
+    {
+        if (is_null($middleware)) {
+            return self::getInstance();
+        }
+
+        if (!is_array($middleware)) {
+            $middleware = func_get_arg(0);
+        }
+
+        if (isset(self::$action[self::$currentLevel]['middlewares'])) {
+            self::$action[self::$currentLevel]['middlewares'] = array_merge(
+              self::$action[self::$currentLevel]['middlewares'],
+              $middleware
+            );
+          } else {
+            self::$action[self::$currentLevel]['middlewares'] = $middleware;
+          }        
+          
+          return self::getInstance();
+    }
 }

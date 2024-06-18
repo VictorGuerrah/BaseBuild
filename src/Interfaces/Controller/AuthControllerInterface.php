@@ -6,7 +6,8 @@ use App\Core\Classes\Request;
 
 interface AuthControllerInterface
 {
-    public function view(): void;
+    public function loginView(): void;
+    public function dashboardView(): void;
     public function checkAuthentication(): void;
     public function validateCredentials(Request $request): void;
     public function logout(): void;

@@ -7,13 +7,13 @@ use App\Interfaces\Model\CurrentTokenModelInterface;
 class CurrentTokenModel implements CurrentTokenModelInterface
 {
     private string $userId;
-    private string $tokenHash;
+    private string $hash;
     private bool $isValid;
 
     public function __construct(string $userId, string $tokenHash, bool $isValid)
     {
         $this->setUserId($userId);
-        $this->setTokenHash($tokenHash);
+        $this->setHash($tokenHash);
         $this->setIsValid($isValid);
     }
 
@@ -28,14 +28,14 @@ class CurrentTokenModel implements CurrentTokenModelInterface
         $this->userId = $userId;
     }
 
-    public function getTokenHash(): string
+    public function getHash(): string
     {
-        return $this->tokenHash;
+        return $this->hash;
     }
 
-    public function setTokenHash(string $tokenHash): void
+    public function setHash(string $tokenHash): void
     {
-        $this->tokenHash = $tokenHash;
+        $this->hash = $tokenHash;
     }
 
     public function isValid(): bool

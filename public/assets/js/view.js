@@ -2,7 +2,7 @@ var View = {
     index: function() {
         View.checkAuth(function(isAuthenticated) {
             if (isAuthenticated) {
-                View.load('dashboard/index', '.container', function() {
+                View.load('auth/view-dashboard', 'body', function() {
                 });
             } else {
                 View.load('auth/view-login', 'body', function() {
@@ -28,8 +28,8 @@ var View = {
         HTTP.post('auth/check-authentication', {}, false, function(responseText) {
             try {
                 let response = JSON.parse(responseText);
-                if (response.isAuthenticated !== undefined) {
-                    callback(response.isAuthenticated);
+                if (response.data.isAuthenticated === true) {
+                    callback(true);
                 } else {
                     callback(false);
                 }

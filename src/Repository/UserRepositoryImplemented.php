@@ -29,7 +29,7 @@ class UserRepositoryImplemented implements UserRepositoryInterface
         }
     }
 
-    public function getByEmail(string $email): ?UserModel
+    public function findByEmail(string $email): ?UserModel
     {
         $sql = 'SELECT ID, Email, Password FROM users WHERE Email=?';
 
@@ -44,6 +44,28 @@ class UserRepositoryImplemented implements UserRepositoryInterface
             }
 
             $user = new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
+
+            return $user;
+        } catch (\Throwable $th) {
+            throw new \Exception("Failed to fetch user: " . $th->getMessage());
+        }
+    }
+
+    public function findById(string $id): ?UserModel
+    {
+        $sql = 'SELECT ID, Email FROM users WHERE ID=?';
+
+        try {
+            $stmt = Connection::prepare($sql);
+            $bindValues = [$id];
+            Connection::execute($stmt, $bindValues);
+            $result = $stmt->fetch();
+
+            if (!$result) {
+                return null;
+            }
+
+            $user = new UserModel(new Email($result['Email']), $result['ID']);
 
             return $user;
         } catch (\Throwable $th) {
