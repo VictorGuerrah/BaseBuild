@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Core\Classes\Request;
 use App\Core\Classes\Response;
+use App\Core\Classes\Transaction;
 use App\Core\Classes\Validator;
 use App\Interfaces\Controller\AuthControllerInterface;
 use App\Interfaces\Service\AuthServiceInterface;
@@ -67,12 +68,18 @@ class AuthControllerImplemented implements AuthControllerInterface
         try {
             $userId = $this->authService->validateCredentials($request->get('email'), $request->get('password'));
             if (!empty($userId)) {
+                Transaction::startTransaction();
+
                 $this->authService->setCookies($userId);
+
+                Transaction::commitTransaction();
                 $this->response->sendJson(['isValidated' => true]);
+                
             }
 
             $this->response->sendJson(['isValidated' => false]);
         } catch (\Throwable $th) {
+            Transaction::rollbackTransaction();
             throw new \Exception("Credentials error: " . $th->getMessage());
         }
     }
