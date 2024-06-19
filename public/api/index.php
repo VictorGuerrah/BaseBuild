@@ -22,6 +22,13 @@ try {
         throw new Exception("Route not found for endpoint '$endpoint'.", 404);
     }
 
+    $middlewares = $route->getMiddlewares();
+    if (!empty($middlewares)) {
+        foreach ($middlewares as $middleware) {
+            (new Autowired($middleware, $container))->call('handle');
+        }
+    }
+
     $controller = $container->get($route->class);
     $autowired = new Autowired($route->class, $container);
     $result = $autowired->call($route->action);

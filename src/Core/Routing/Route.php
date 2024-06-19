@@ -29,4 +29,9 @@ class Route
             }
         }
     }
+
+    public function getMiddlewares(): ?array
+    {
+        return $this->middlewares;
+    }
 }

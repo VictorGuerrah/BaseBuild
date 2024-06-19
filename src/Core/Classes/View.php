@@ -7,7 +7,7 @@ class View
     protected $cacheData;
     protected $objectLevel;
 
-    public static function load(string $view, array $data = []): ?string
+    public static function render(string $view, array $data = []): ?string
     {
         $fileView = static::getFile($view);
 
@@ -18,10 +18,8 @@ class View
         extract($data, EXTR_OVERWRITE);
         ob_start();
         include($fileView);
-        $buffer = ob_get_contents();
-        ob_end_clean();
 
-        return $buffer;
+        return ob_get_clean();
     }
 
     public static function getFile(string $view): string

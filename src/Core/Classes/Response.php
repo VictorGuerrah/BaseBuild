@@ -44,7 +44,7 @@ class Response
 
     public function sendView(string $path, array $data = []): void
     {
-        $body = View::load($path, $data);
+        $body = View::render($path, $data);
         HTTP::setHeaders([
             200,
             "Content-type: application/json"
@@ -64,7 +64,7 @@ class Response
 
     public function sendHandleError()
     {
-        $body = View::load('exception-screen');
+        $body = View::render('exception-screen');
         HTTP::setHeaders([
             500,
             "Content-type: text/html"

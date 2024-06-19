@@ -46,7 +46,8 @@ class Router
         }
 
         $uri = self::getPrefix() . '/' . trim($uri, '/');
-        self::$routes[$uri] = new Route($method, $uri, $action[0], $action[1]);
+        $middlewares = self::collectMiddlewares();
+        self::$routes[$uri] = new Route($method, $uri, $action[0], $action[1], $middlewares);
     }
 
     public static function post(string $uri, array $action): void
@@ -79,25 +80,36 @@ class Router
         throw new Exception("Route not found.");
     }
 
-    public static function middleware(?string $middleware = null): Router
+    public static function middleware($middleware = null): Router
     {
         if (is_null($middleware)) {
             return self::getInstance();
         }
 
         if (!is_array($middleware)) {
-            $middleware = func_get_arg(0);
+            $middleware = [$middleware];
         }
 
         if (isset(self::$action[self::$currentLevel]['middlewares'])) {
             self::$action[self::$currentLevel]['middlewares'] = array_merge(
-              self::$action[self::$currentLevel]['middlewares'],
-              $middleware
+                self::$action[self::$currentLevel]['middlewares'],
+                $middleware
             );
-          } else {
+        } else {
             self::$action[self::$currentLevel]['middlewares'] = $middleware;
-          }        
-          
-          return self::getInstance();
+        }
+
+        return self::getInstance();
+    }
+
+    private static function collectMiddlewares(): array
+    {
+        $middlewares = [];
+        for ($level = 0; $level <= self::$currentLevel; $level++) {
+            if (isset(self::$action[$level]['middlewares'])) {
+                $middlewares = array_merge($middlewares, self::$action[$level]['middlewares']);
+            }
+        }
+        return $middlewares;
     }
 }

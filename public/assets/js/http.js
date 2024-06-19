@@ -1,6 +1,6 @@
 var HTTP = {
     post: function(endpoint, parameters, loading = false, callback, fallback) {
-        let url = baseUrl + 'services/' + endpoint;
+        let url = baseUrl + 'api/' + endpoint;
 
         $.ajax({
             method: "POST",
