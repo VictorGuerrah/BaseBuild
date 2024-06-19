@@ -21,15 +21,11 @@ class CurrentTokenServiceImplemented implements CurrentTokenServiceInterface
     public function save(string $userId, string $token): void
     {
         $currentToken = $this->currentTokenRepository->findOne($userId);
-
-        // Criar uma instância do modelo de token com os dados recebidos
         $newCurrentToken = new CurrentTokenModel($userId, $token, true);
 
         if (empty($currentToken)) {
-            // Se não houver token existente para este usuário, inserir o novo token
             $this->currentTokenRepository->insert($newCurrentToken);
         } else {
-            // Se já houver um token existente, atualizar com o novo token
             $this->currentTokenRepository->update($newCurrentToken);
         }
     }

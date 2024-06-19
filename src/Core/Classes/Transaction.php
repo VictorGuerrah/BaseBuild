@@ -15,14 +15,14 @@ class Transaction
 
     public static function commitTransaction(): void
     {
-        if (!self::isTransactionActive()) {
+        if (self::isTransactionActive()) {
             Connection::commitTransaction();
         }
     }
 
     public static function rollbackTransaction(): void
     {
-        if (!self::isTransactionActive()) {
+        if (self::isTransactionActive()) {
             Connection::rollbackTransaction();
         }
     }
