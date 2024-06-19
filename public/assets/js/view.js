@@ -1,29 +1,31 @@
 var View = {
-    index: function() {
-        View.checkAuth(function(isAuthenticated) {
+    index: function () {
+        View.checkAuth(function (isAuthenticated) {
             if (isAuthenticated) {
-                View.load('auth/view-dashboard', '.container', function() {});
+                View.render('auth/view-dashboard', '.container', function () { });
             } else {
-                View.load('auth/view-login', '.container', function() {});
+                View.render('auth/view-login', '.container', function () { });
             }
         });
     },
 
-    load: function(path, insertObject, callback, loading = false) {
+    render: function (path, insertObject, callback, loading = false) {
         let parameters = [];
 
-        HTTP.post(path, parameters, loading, function(responseText) {
+        HTTP.post(path, parameters, loading, function (responseText) {
             $(insertObject).html(responseText);
             if (typeof callback === 'function') {
                 callback();
             }
-        }, function(error) {
-            console.error('Something went wrong:', error);
+        }, function (error) {
+            if (!HTTP.handleErrors(error)) {
+                showError(error);
+            }
         });
     },
 
-    checkAuth: function(callback) {
-        HTTP.post('auth/check-authentication', {}, false, function(responseText) {
+    checkAuth: function (callback) {
+        HTTP.post('auth/check-authentication', {}, false, function (responseText) {
             try {
                 let response = JSON.parse(responseText);
                 if (response.data.isAuthenticated === true) {
@@ -31,12 +33,16 @@ var View = {
                 } else {
                     callback(false);
                 }
-            } catch (e) {
-                console.error('Something went wrong:', e);
+            } catch (error) {
+                if (!HTTP.handleErrors(error)) {
+                    showError(error);
+                }
                 callback(false);
             }
-        }, function(error) {
-            console.error('Something went wrong:', error);
+        }, function (error) {
+            if (!HTTP.handleErrors(error)) {
+                showError(error);
+            }
             callback(false);
         });
     }

@@ -14,7 +14,7 @@ class AuthenticationMiddleware
         try {
             $authData = $authService->getCookies();
             if (empty($authData)) {
-                throw new Exception("Invalid session.");
+                throw new Exception("Invalid session.", 401);
             }
 
             $user = $userRepository->findById($authData['info']['userID']);

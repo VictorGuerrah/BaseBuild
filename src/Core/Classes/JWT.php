@@ -31,13 +31,13 @@ class JWT
     public static function read(string $token): array
     {
         if (empty($token)) {
-            throw new Exception("Invalid token.");
+            throw new Exception("Invalid token.", 401);
         }
 
         $parts = explode('.', $token);
 
         if (count($parts) !== 3) {
-            throw new Exception("Invalid Token.");
+            throw new Exception("Invalid token.", 401);
         }
 
         $base64Header = $parts[0];
