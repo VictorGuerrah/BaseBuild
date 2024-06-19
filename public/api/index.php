@@ -22,16 +22,18 @@ try {
         throw new Exception("Route not found for endpoint '$endpoint'.", 404);
     }
 
-    $middlewares = $route->getMiddlewares();
-    if (!empty($middlewares)) {
-        foreach ($middlewares as $middleware) {
-            (new Autowired($middleware, $container))->call('handle');
-        }
-    }
+    // $middlewares = $route->getMiddlewares();
+    // if (!empty($middlewares)) {
+    //     foreach ($middlewares as $middleware) {
+    //         $middlewareInstance = $container->get($middleware);
+    //         $autowired = new Autowired($middleware, $container);
+    //         $autowired->call('handle', $middlewareInstance);
+    //     }
+    // }
 
     $controller = $container->get($route->class);
     $autowired = new Autowired($route->class, $container);
-    $result = $autowired->call($route->action);
+    $result = $autowired->call($route->action, $controller);
 
     echo $result;
 } catch (Exception $e) {

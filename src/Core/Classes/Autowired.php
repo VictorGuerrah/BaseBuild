@@ -25,7 +25,7 @@ class Autowired
         return $this->instance;
     }
 
-    public function call(string $method): mixed
+    public function call(string $method, ?object $instance = null): mixed
     {
         if ($method === '__construct') {
             throw new Exception("__construct cannot be called twice. Use getInstance() to retrieve the object.");
@@ -34,7 +34,7 @@ class Autowired
         $methodReflection = $this->getMethod($method);
         $dependencies = $this->getDependencies($method);
 
-        return $methodReflection->invokeArgs($this->instance, $dependencies);
+        return $methodReflection->invokeArgs($instance ?? $this->instance, $dependencies);
     }
 
     protected function getMethod(string $method): \ReflectionMethod
@@ -70,20 +70,17 @@ class Autowired
 
             if ($dependencyType && !$dependencyType->isBuiltin()) {
                 $className = $dependencyType->getName();
-                if ($this->container->has($className)) {
-                    $resolvedDependencies[$dependency->name] = $this->container->get($className);
-                } else {
-                    $autowired = new self($className, $this->container);
-                    $resolvedDependencies[$dependency->name] = $autowired->getInstance();
-                }
-            } elseif (isset($_REQUEST[$dependency->name])) {
-                $resolvedDependencies[$dependency->name] = $_REQUEST[$dependency->name];
-            } elseif ($return = $this->json($dependency->name)) {
-                $resolvedDependencies[$dependency->name] = $return;
-            } elseif ($return = $this->phpInput($dependency->name)) {
-                $resolvedDependencies[$dependency->name] = $return;
+                $resolvedDependencies[$dependency->getName()] = $this->container->get($className);
+            } elseif (isset($_REQUEST[$dependency->getName()])) {
+                $resolvedDependencies[$dependency->getName()] = $_REQUEST[$dependency->getName()];
+            } elseif ($return = $this->json($dependency->getName())) {
+                $resolvedDependencies[$dependency->getName()] = $return;
+            } elseif ($return = $this->phpInput($dependency->getName())) {
+                $resolvedDependencies[$dependency->getName()] = $return;
+            } elseif ($dependency->isDefaultValueAvailable()) {
+                $resolvedDependencies[$dependency->getName()] = $dependency->getDefaultValue();
             } else {
-                $resolvedDependencies[$dependency->name] = null;
+                throw new Exception("Cannot resolve parameter {$dependency->getName()} in method $method of class {$this->myClass}.");
             }
         }
 

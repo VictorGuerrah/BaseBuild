@@ -4,7 +4,9 @@ namespace App\Core\Classes;
 
 use App\Interfaces\ContainerInterface;
 use ReflectionClass;
+use ReflectionParameter;
 use Exception;
+use InvalidArgumentException;
 
 class Container implements ContainerInterface
 {
@@ -28,7 +30,7 @@ class Container implements ContainerInterface
             if (is_callable($concrete)) {
                 $object = $concrete($this);
             } else {
-                $object = new $concrete();
+                $object = $this->resolve($concrete);
             }
 
             $this->instances[$class] = $object;
@@ -45,7 +47,8 @@ class Container implements ContainerInterface
 
     public function autoRegister(string $namespace): void
     {
-        $files = glob(__DIR__ . "/$namespace/*.php");
+        $directory = str_replace('\\', DIRECTORY_SEPARATOR, $namespace);
+        $files = glob(__DIR__ . "/$directory/*.php");
 
         foreach ($files as $file) {
             $className = basename($file, '.php');
@@ -58,19 +61,11 @@ class Container implements ContainerInterface
                     $constructor = $reflectionClass->getConstructor();
 
                     if ($constructor) {
-                        $dependencies = [];
-                        foreach ($constructor->getParameters() as $parameter) {
-                            $dependencyType = $parameter->getType();
-
-                            if ($dependencyType && !$dependencyType->isBuiltin()) {
-                                $dependencyClassName = $dependencyType->getName();
-                                $dependencies[] = $this->get($dependencyClassName);
-                            } else {
-                                throw new Exception("Cannot resolve parameter {$parameter->getName()} in class $fullClassName.");
-                            }
-                        }
-
-                        $this->bind($fullClassName, function () use ($reflectionClass, $dependencies) {
+                        $this->bind($fullClassName, function (Container $container) use ($reflectionClass, $constructor) {
+                            $dependencies = array_map(
+                                fn(ReflectionParameter $param) => $this->resolveParameter($param, $container),
+                                $constructor->getParameters()
+                            );
                             return $reflectionClass->newInstanceArgs($dependencies);
                         });
                     } else {
@@ -79,5 +74,37 @@ class Container implements ContainerInterface
                 }
             }
         }
+    }
+
+    public function resolve(string $class): object
+    {
+        $reflectionClass = new ReflectionClass($class);
+        $constructor = $reflectionClass->getConstructor();
+
+        if (!$constructor) {
+            return new $class;
+        }
+
+        $dependencies = array_map(
+            fn(ReflectionParameter $param) => $this->resolveParameter($param, $this),
+            $constructor->getParameters()
+        );
+
+        return $reflectionClass->newInstanceArgs($dependencies);
+    }
+
+    public function resolveParameter(ReflectionParameter $param, Container $container): mixed
+    {
+        $type = $param->getType();
+
+        if (!$type) {
+            throw new InvalidArgumentException("Parameter {$param->getName()} has no type hint.");
+        }
+
+        if ($type->isBuiltin()) {
+            throw new InvalidArgumentException("Cannot resolve built-in parameter {$param->getName()}.");
+        }
+
+        return $container->get($type->getName());
     }
 }
