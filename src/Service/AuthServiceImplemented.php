@@ -12,7 +12,6 @@ use App\Interfaces\Service\CurrentTokenServiceInterface;
 use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 use App\Model\ValuableObject\Password;
-use Exception;
 
 class AuthServiceImplemented implements AuthServiceInterface
 {
@@ -90,15 +89,15 @@ class AuthServiceImplemented implements AuthServiceInterface
 
             $info = json_decode($payload['data'], true);
             if ($info === null || json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception("Invalid JSON data in info.");
+                throw new \Exception("Invalid JSON data in info.");
             }
 
             return [
                 'info' => $info,
                 'token' => $token
             ];
-        } catch (Exception $e) {
-            throw new Exception("Invalid token: " . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception("Invalid token: " . $e->getMessage());
         }
     }
 

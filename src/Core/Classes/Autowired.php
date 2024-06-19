@@ -3,7 +3,6 @@
 namespace App\Core\Classes;
 
 use ReflectionClass;
-use Exception;
 
 class Autowired
 {
@@ -28,7 +27,7 @@ class Autowired
     public function call(string $method, ?object $instance = null): mixed
     {
         if ($method === '__construct') {
-            throw new Exception("__construct cannot be called twice. Use getInstance() to retrieve the object.");
+            throw new \Exception("__construct cannot be called twice. Use getInstance() to retrieve the object.", 500);
         }
 
         $methodReflection = $this->getMethod($method);
@@ -40,7 +39,7 @@ class Autowired
     protected function getMethod(string $method): \ReflectionMethod
     {
         if (!$this->reflectionClass->hasMethod($method)) {
-            throw new Exception("Method $method does not exist in the class {$this->myClass}.", 404);
+            throw new \Exception("Method $method does not exist in the class {$this->myClass}.", 404);
         }
 
         return $this->reflectionClass->getMethod($method);
@@ -80,7 +79,7 @@ class Autowired
             } elseif ($dependency->isDefaultValueAvailable()) {
                 $resolvedDependencies[$dependency->getName()] = $dependency->getDefaultValue();
             } else {
-                throw new Exception("Cannot resolve parameter {$dependency->getName()} in method $method of class {$this->myClass}.");
+                throw new \Exception("Cannot resolve parameter {$dependency->getName()} in method $method of class {$this->myClass}.", 500);
             }
         }
 

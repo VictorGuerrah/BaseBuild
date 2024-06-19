@@ -5,7 +5,6 @@ namespace App\Core\Classes;
 use App\Interfaces\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
-use Exception;
 use InvalidArgumentException;
 
 class Container implements ContainerInterface
@@ -37,7 +36,7 @@ class Container implements ContainerInterface
             return $object;
         }
 
-        throw new Exception("Class $class not found in container.");
+        throw new \Exception("Class $class not found in container.");
     }
 
     public function has(string $class): bool

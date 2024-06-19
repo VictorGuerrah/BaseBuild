@@ -9,7 +9,6 @@ use App\Core\Classes\Validator;
 use App\Interfaces\Controller\AuthControllerInterface;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
-use Exception;
 
 class AuthControllerImplemented implements AuthControllerInterface
 {
@@ -48,8 +47,8 @@ class AuthControllerImplemented implements AuthControllerInterface
             $this->currentTokenService->checkToken($authData['info']['userID'], $authData['token']);
             $this->response->sendJson(['isAuthenticated' => true]);
         
-        } catch (Exception $ex) {
-            $this->response->sendJson(['isAuthenticated' => false]);
+        } catch (\Exception $ex) {
+            $this->response->message($ex->getMessage())->sendJson([], $ex->getCode());
         }
         
     }
@@ -78,9 +77,8 @@ class AuthControllerImplemented implements AuthControllerInterface
             }
 
             $this->response->sendJson(['isValidated' => false]);
-        } catch (\Throwable $th) {
-            Transaction::rollbackTransaction();
-            throw new \Exception("Credentials error: " . $th->getMessage());
+        } catch (\Exception $ex) {
+            $this->response->message($ex->getMessage())->sendJson([], $ex->getCode());
         }
     }
 

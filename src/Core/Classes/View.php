@@ -12,7 +12,7 @@ class View
         $fileView = static::getFile($view);
 
         if (!file_exists($fileView)) {
-            throw new \Exception("File not found: $fileView.");
+            throw new \Exception("File not found: $fileView.", 404);
         }
 
         extract($data, EXTR_OVERWRITE);
@@ -34,6 +34,6 @@ class View
             return BASE_VIEW . "$view.php";
         }
 
-        throw new \Exception("View file not found: " . BASE_VIEW . "$view.php");
+        throw new \Exception("View file not found: " . BASE_VIEW . "$view.php", 404);
     }
 }

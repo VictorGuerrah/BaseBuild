@@ -2,8 +2,6 @@
 
 namespace App\Core\Classes;
 
-use Exception;
-
 class JWT
 {
     private static array $header = ['alg' => 'HS256', 'type' => 'JWT'];
@@ -31,13 +29,13 @@ class JWT
     public static function read(string $token): array
     {
         if (empty($token)) {
-            throw new Exception("Invalid token.", 401);
+            throw new \Exception("Invalid token.", 401);
         }
 
         $parts = explode('.', $token);
 
         if (count($parts) !== 3) {
-            throw new Exception("Invalid token.", 401);
+            throw new \Exception("Invalid token.", 401);
         }
 
         $base64Header = $parts[0];
@@ -48,26 +46,26 @@ class JWT
         $base64Signature = base64_encode($signatureHash);
 
         if (!hash_equals($signature, $base64Signature)) {
-            throw new Exception("Invalid token");
+            throw new \Exception("Invalid token", 401);
         }
 
 
         $jsonPayload = base64_decode($base64Payload, true);
         if ($jsonPayload === false) {
-            throw new Exception("Invalid token");
+            throw new \Exception("Invalid token", 401);
         }
 
         $payload = json_decode($jsonPayload, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Invalid token");
+            throw new \Exception("Invalid token", 401);
         }
 
         if (time() > $payload['exp']) {
-            throw new Exception("Token has expired");
+            throw new \Exception("Token has expired", 401);
         }
 
         if ($payload['iss'] != self::$iss) {
-            throw new Exception("Invalid issuer");
+            throw new \Exception("Invalid issuer", 403);
         }
 
         return $payload;

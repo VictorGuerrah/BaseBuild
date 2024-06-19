@@ -2,12 +2,9 @@
 
 namespace App\Service;
 
-use App\Core\Classes\Environment;
-use App\Core\Classes\JWT;
 use App\Interfaces\Repository\CurrentTokenRepositoryInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 use App\Model\Entity\CurrentTokenModel;
-use Exception;
 
 class CurrentTokenServiceImplemented implements CurrentTokenServiceInterface
 {
@@ -36,11 +33,11 @@ class CurrentTokenServiceImplemented implements CurrentTokenServiceInterface
         $currentToken = $this->currentTokenRepository->findOne($userId);
 
         if (empty($currentToken)) {
-            throw new Exception("Token not found.");
+            throw new \Exception("Token not found.", 401);
         }
 
         if (!$currentToken->isValid() || !hash_equals($token, $currentToken->getHash())) {
-            throw new Exception("Invalid Token.");
+            throw new \Exception("Invalid Token.", 401);
         }
     }
 }

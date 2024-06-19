@@ -5,7 +5,7 @@ class RouteServiceProvider
     public function map($directory)
     {
         if (!is_dir($directory)) {
-            throw new \Exception("Invalid directory: $directory");
+            throw new \Exception("Invalid directory: $directory", 404);
         }
 
         $files = scandir($directory);

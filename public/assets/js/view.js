@@ -26,6 +26,7 @@ var View = {
 
     checkAuth: function (callback) {
         HTTP.post('auth/check-authentication', {}, false, function (responseText) {
+            debugger
             try {
                 let response = JSON.parse(responseText);
                 if (response.data.isAuthenticated === true) {

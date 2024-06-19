@@ -2,8 +2,6 @@
 
 namespace App\Core\Routing;
 
-use Exception;
-
 class Router
 {
     private static Router $instance;
@@ -42,7 +40,7 @@ class Router
     public static function register(string $method, string $uri, array $action): void
     {
         if (count($action) !== 2 || !is_string($action[0]) || !is_string($action[1])) {
-            throw new Exception("Invalid action provided for route registration.");
+            throw new \Exception("Invalid action provided for route registration.", 500);
         }
 
         $uri = self::getPrefix() . '/' . trim($uri, '/');
@@ -72,12 +70,12 @@ class Router
 
             if ($trimmedEndpoint === $trimmedKey) {
                 if (strtoupper($route->method) !== $_SERVER['REQUEST_METHOD']) {
-                    throw new \Exception("Method not allowed.");
+                    throw new \Exception("Method not allowed.", 403);
                 }
                 return $route;
             }
         }
-        throw new Exception("Route not found.");
+        throw new \Exception("Route not found.", 404);
     }
 
     public static function middleware($middleware = null): Router
