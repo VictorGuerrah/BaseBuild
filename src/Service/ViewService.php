@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Interfaces\Service\ViewServiceInterface;
 
-class ViewServiceImplemented implements ViewServiceInterface
+class ViewService implements ViewServiceInterface
 {
     public static function load(string $path): void
     {

@@ -13,7 +13,7 @@ use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 use App\Model\ValuableObject\Password;
 
-class AuthServiceImplemented implements AuthServiceInterface
+class AuthService implements AuthServiceInterface
 {
     public const SESSION_IDENTIFIER = 'basebuild-in';
     public UserModel $loggedUser;

@@ -8,7 +8,7 @@ use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 
-class UserRepositoryImplemented implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterface
 {
     public function __construct() { }
 

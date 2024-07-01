@@ -10,7 +10,7 @@ use App\Interfaces\Controller\AuthControllerInterface;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 
-class AuthControllerImplemented implements AuthControllerInterface
+class AuthController implements AuthControllerInterface
 {
     protected Response $response;
     protected Validator $validator;

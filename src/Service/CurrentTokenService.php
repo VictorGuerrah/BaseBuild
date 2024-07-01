@@ -6,7 +6,7 @@ use App\Interfaces\Repository\CurrentTokenRepositoryInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 use App\Model\Entity\CurrentTokenModel;
 
-class CurrentTokenServiceImplemented implements CurrentTokenServiceInterface
+class CurrentTokenService implements CurrentTokenServiceInterface
 {
     private CurrentTokenRepositoryInterface $currentTokenRepository;
 

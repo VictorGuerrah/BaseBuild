@@ -7,7 +7,7 @@ use App\Interfaces\Model\CurrentTokenModelInterface;
 use App\Interfaces\Repository\CurrentTokenRepositoryInterface;
 use App\Model\Entity\CurrentTokenModel;
 
-class CurrentTokenRepositoryImplemented implements CurrentTokenRepositoryInterface
+class CurrentTokenRepository implements CurrentTokenRepositoryInterface
 {
     public function __construct() { }
 
