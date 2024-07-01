@@ -24,7 +24,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
             ->toSql();
 
         $stmt = $this->connection->query($query);
-        return $stmt->fetchAll();
+        return $this->mapResults($stmt->fetchAll());
     }
 
     public function findBy(array $criteria): array
@@ -39,7 +39,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($queryBuilder->getBindings());
 
-        return $stmt->fetchAll();
+        return $this->mapResults($stmt->fetchAll());
     }
 
     public function findOneBy(array $criteria): mixed
@@ -56,5 +56,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function findOneByColumn(string $column, $value): mixed
     {
         return $this->findOneBy([$column => $value]);
+    }
+
+    protected function mapResults(array $results): array
+    {
+        return $results;
     }
 }

@@ -44,17 +44,8 @@ class CurrentTokenRepository extends BaseRepository implements CurrentTokenRepos
         }
     }
 
-    public function findAll(): array
+    public function mapResults(array $results): array
     {
-        $results = parent::findAll();
-        return array_map(function ($result) {
-            return new CurrentTokenModel($result['UserID'], $result['TokenHash'], $result['IsValid']);
-        }, $results);
-    }
-
-    public function findBy(array $criteria): array
-    {
-        $results = parent::findBy($criteria);
         return array_map(function ($result) {
             return new CurrentTokenModel($result['UserID'], $result['TokenHash'], $result['IsValid']);
         }, $results);

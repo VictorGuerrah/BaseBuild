@@ -2,8 +2,9 @@
 
 namespace App\Repository;
 
-use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Core\Database\Connection;
 use App\Interfaces\Model\UserModelInterface;
+use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 
@@ -28,17 +29,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
     }
 
-    public function findAll(): array
+    protected function mapResults(array $results): array
     {
-        $results = parent::findAll();
-        return array_map(function ($result) {
-            return new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
-        }, $results);
-    }
-
-    public function findBy(array $criteria): array
-    {
-        $results = parent::findBy($criteria);
         return array_map(function ($result) {
             return new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
         }, $results);
