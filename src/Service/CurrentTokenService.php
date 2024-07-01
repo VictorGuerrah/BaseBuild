@@ -17,7 +17,7 @@ class CurrentTokenService implements CurrentTokenServiceInterface
 
     public function save(string $userId, string $token): void
     {
-        $currentToken = $this->currentTokenRepository->findOne($userId);
+        $currentToken = $this->currentTokenRepository->findOneBy(['UserID' => $userId]);
         $newCurrentToken = new CurrentTokenModel($userId, $token, true);
 
         if (empty($currentToken)) {
@@ -30,7 +30,7 @@ class CurrentTokenService implements CurrentTokenServiceInterface
 
     public function checkToken(string $userId, string $token): void
     {
-        $currentToken = $this->currentTokenRepository->findOne($userId);
+        $currentToken = $this->currentTokenRepository->findOneBy(['UserID' => $userId]);
 
         if (empty($currentToken)) {
             throw new \Exception("Token not found.", 401);

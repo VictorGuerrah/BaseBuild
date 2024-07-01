@@ -2,74 +2,45 @@
 
 namespace App\Repository;
 
-use App\Core\Database\Connection;
-use App\Interfaces\Model\UserModelInterface;
 use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Interfaces\Model\UserModelInterface;
 use App\Model\Entity\UserModel;
 use App\Model\ValuableObject\Email;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    public function __construct() { }
+    protected string $table = 'users';
 
     public function insert(UserModelInterface $user): void
     {
         $sql = 'INSERT INTO users (id, email, password) VALUES (?, ?, ?)';
 
         try {
-            $stmt = Connection::prepare($sql);
+            $stmt = $this->connection->prepare($sql);
             $bindValues = [
                 $user->getID(),
                 $user->getEmail(),
                 $user->getPasswordHash()
             ];
-            Connection::execute($stmt, $bindValues);
+            $stmt->execute($bindValues);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to insert user: " . $th->getMessage());
         }
     }
 
-    public function findByEmail(string $email): ?UserModel
+    public function findAll(): array
     {
-        $sql = 'SELECT ID, Email, Password FROM users WHERE Email=?';
-
-        try {
-            $stmt = Connection::prepare($sql);
-            $bindValues = [$email];
-            Connection::execute($stmt, $bindValues);
-            $result = $stmt->fetch();
-
-            if (!$result) {
-                return null;
-            }
-
-            $user = new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
-
-            return $user;
-        } catch (\Throwable $th) {
-            throw new \Exception("Failed to fetch user: " . $th->getMessage());
-        }
+        $results = parent::findAll();
+        return array_map(function ($result) {
+            return new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
+        }, $results);
     }
 
-    public function findById(string $id): ?UserModel
+    public function findBy(array $criteria): array
     {
-        $sql = 'SELECT ID, Email FROM users WHERE ID=?';
-
-        try {
-            $stmt = Connection::prepare($sql);
-            $bindValues = [$id];
-            Connection::execute($stmt, $bindValues);
-            $result = $stmt->fetch();
-
-            if (!$result) {
-                return null;
-            }
-
-            $user = new UserModel(new Email($result['Email']), $result['ID']);
-
-            return $user;
-        } catch (\Throwable $th) {
-            throw new \Exception("Failed to fetch user: " . $th->getMessage());
-        }
+        $results = parent::findBy($criteria);
+        return array_map(function ($result) {
+            return new UserModel(new Email($result['Email']), $result['Password'], $result['ID']);
+        }, $results);
     }
 }

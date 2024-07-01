@@ -9,8 +9,6 @@ class Router
     private static array $routes = [];
     private static int $currentLevel = 0;
 
-    private function __construct() {}
-
     public static function getInstance(): Router
     {
         if (!isset(self::$instance)) {

@@ -95,4 +95,9 @@ class Connection
     {
         return self::$transactionActive;
     }
+
+    public static function getInstance(): PDO
+    {
+        return self::connect();
+    }
 }

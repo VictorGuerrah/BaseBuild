@@ -2,27 +2,26 @@
 
 namespace App\Repository;
 
-use App\Core\Database\Connection;
 use App\Interfaces\Model\CurrentTokenModelInterface;
 use App\Interfaces\Repository\CurrentTokenRepositoryInterface;
 use App\Model\Entity\CurrentTokenModel;
 
-class CurrentTokenRepository implements CurrentTokenRepositoryInterface
+class CurrentTokenRepository extends BaseRepository implements CurrentTokenRepositoryInterface
 {
-    public function __construct() { }
+    protected string $table = 'current_token';
 
     public function insert(CurrentTokenModelInterface $currentToken): void
     {
         $sql = 'INSERT INTO current_token (UserID, TokenHash, IsValid) VALUES (?, ?, ?)';
 
         try {
-            $stmt = Connection::prepare($sql);
+            $stmt = $this->connection->prepare($sql);
             $bindValues = [
                 $currentToken->getUserId(),
                 $currentToken->getHash(),
                 $currentToken->isValid()
             ];
-            Connection::execute($stmt, $bindValues);
+            $stmt->execute($bindValues);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to insert token: " . $th->getMessage());
         }
@@ -33,35 +32,31 @@ class CurrentTokenRepository implements CurrentTokenRepositoryInterface
         $sql = 'UPDATE current_token SET TokenHash = ?, IsValid = ? WHERE UserID = ?';
 
         try {
-            $stmt = Connection::prepare($sql);
+            $stmt = $this->connection->prepare($sql);
             $bindValues = [
                 $currentToken->getHash(),
                 $currentToken->isValid(),
                 $currentToken->getUserId()
             ];
-            Connection::execute($stmt, $bindValues);
+            $stmt->execute($bindValues);
         } catch (\Throwable $th) {
             throw new \Exception("Failed to update token: " . $th->getMessage());
         }
     }
 
-    public function findOne(string $userId): ?CurrentTokenModel
+    public function findAll(): array
     {
-        $sql = 'SELECT UserID, TokenHash, IsValid FROM current_token WHERE UserID=?';
-
-        try {
-            $stmt = Connection::prepare($sql);
-            $bindValues = [$userId];
-            Connection::execute($stmt, $bindValues);
-            $result = $stmt->fetch();
-
-            if (!$result) {
-                return null;
-            }
-
+        $results = parent::findAll();
+        return array_map(function ($result) {
             return new CurrentTokenModel($result['UserID'], $result['TokenHash'], $result['IsValid']);
-        } catch (\Throwable $th) {
-            throw new \Exception("Failed to fetch token: " . $th->getMessage());
-        }
+        }, $results);
+    }
+
+    public function findBy(array $criteria): array
+    {
+        $results = parent::findBy($criteria);
+        return array_map(function ($result) {
+            return new CurrentTokenModel($result['UserID'], $result['TokenHash'], $result['IsValid']);
+        }, $results);
     }
 }

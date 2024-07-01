@@ -40,7 +40,7 @@ class AuthService implements AuthServiceInterface
     public function validateCredentials(string $email, string $password): ?string
     {
         $email = new Email($email);
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->userRepository->findOneBy(['Email' => $email]);
 
         if (is_null($user)) {
             $invalidPassword = new Password(uniqid());
