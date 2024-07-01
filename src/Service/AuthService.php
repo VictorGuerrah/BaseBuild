@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Constants\AuthenticationPolicy;
-use App\Core\Classes\Cookies;
-use App\Core\Classes\Environment;
-use App\Core\Classes\JWT;
+use App\Core\Http\Cookies;
+use App\Core\Environment;
+use App\Core\Http\Jwt;
 use App\Interfaces\Repository\UserRepositoryInterface;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;

@@ -1,7 +1,7 @@
 <?php
 
-use App\Core\Classes\Container;
-use App\Core\Classes\Autowired;
+use App\Core\DependencyInjection\Container;
+use App\Core\DependencyInjection\Autowired;
 use App\Interfaces\ContainerInterface;
 
 $container = new Container();
@@ -21,7 +21,7 @@ function registerClassesRecursively(ContainerInterface $container, string $baseD
         $relativePath = str_replace([$baseDir, '/', '.php'], ['', '\\', ''], $filePath);
         $className = $namespacePrefix . $relativePath;
 
-        if ($className === "App\\Core\\Classes\\Util") {
+        if ($className === "App\\Core\\Utils\\Util") {
             continue;
         }
 

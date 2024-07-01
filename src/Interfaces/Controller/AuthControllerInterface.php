@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\Controller;
 
-use App\Core\Classes\Request;
+use App\Core\Http\Request;
 
 interface AuthControllerInterface
 {

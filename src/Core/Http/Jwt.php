@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Core\Classes;
+namespace App\Core\Http;
+
+use App\Core\Environment;
 
 class JWT
 {

@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-use App\Core\Classes\Container;
+use App\Core\DependencyInjection\Container;
 use ReflectionParameter;
 
 interface ContainerInterface

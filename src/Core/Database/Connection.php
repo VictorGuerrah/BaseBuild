@@ -2,7 +2,7 @@
 
 namespace App\Core\Database;
 
-use App\Core\Classes\Environment;
+use App\Core\Environment;
 use PDO;
 use PDOStatement;
 

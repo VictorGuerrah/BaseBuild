@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Core\Classes;
-
-use App\Core\Database\Connection;
+namespace App\Core\Database;
 
 class Transaction
 {

@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
-use App\Core\Classes\Request;
-use App\Core\Classes\Response;
-use App\Core\Classes\Transaction;
-use App\Core\Classes\Validator;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
+use App\Core\Database\Transaction;
+use App\Core\Validation\Validator;
 use App\Interfaces\Controller\AuthControllerInterface;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Core\Classes;
+namespace App\Core\Http;
 
-use App\Core\Classes\HTTP;
-use App\Core\Classes\View;
+use App\Core\Http\Http;
+use App\Core\View\View;
 
 class Response
 {
@@ -24,7 +24,7 @@ class Response
         $this->data = $data;
         $body = json_encode($this->getData());
 
-        HTTP::setHeaders([
+        Http::setHeaders([
             200,
             "Content-type: application/json"
         ]);
@@ -35,7 +35,7 @@ class Response
     private function getData()
     {
         return [
-            'status' => HTTP::getStatusCodeMessage($this->statusCode),
+            'status' => Http::getStatusCodeMessage($this->statusCode),
             'statusCode' => $this->statusCode,
             'data' => $this->data,
             'message' => $this->message
@@ -45,7 +45,7 @@ class Response
     public function sendView(string $path, array $data = []): void
     {
         $body = View::render($path, $data);
-        HTTP::setHeaders([
+        Http::setHeaders([
             200,
             "Content-type: application/json"
         ]);
@@ -65,7 +65,7 @@ class Response
     public function sendHandleError()
     {
         $body = View::render('exception-screen');
-        HTTP::setHeaders([
+        Http::setHeaders([
             500,
             "Content-type: text/html"
         ]);

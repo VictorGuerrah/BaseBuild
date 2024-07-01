@@ -1,8 +1,8 @@
 <?php
 
 use App\Core\Routing\Router;
-use App\Core\Classes\HTTP;
-use App\Core\Classes\Autowired;
+use App\Core\Http\Http;
+use App\Core\DependencyInjection\Autowired;
 
 include_once dirname(__FILE__, 3) . '/config/configuration.php';
 include_once dirname(__FILE__, 3) . '/config/routes.php';
@@ -15,7 +15,7 @@ try {
         throw new Exception("Missing endpoint.", 404);
     }
 
-    HTTP::setPost($_POST);
+    Http::setPost($_POST);
 
     $route = Router::search($endpoint);
     if ($route === null) {
@@ -37,5 +37,5 @@ try {
 
     echo $result;
 } catch (Exception $e) {
-    HTTP::sendResponse($e->getCode(), $e->getMessage());
+    Http::sendResponse($e->getCode(), $e->getMessage());
 }

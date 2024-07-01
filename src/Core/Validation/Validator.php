@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Classes;
+namespace App\Core\Validation;
 
-use app\Core\Classes\Request;
+use app\Core\Http\Request;
 
 class Validator
 {

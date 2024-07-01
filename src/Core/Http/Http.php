@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Classes;
+namespace App\Core\Http;
 
-class HTTP
+class Http
 {
     public static $_POST;
 
