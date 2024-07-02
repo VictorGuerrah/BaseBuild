@@ -2,12 +2,19 @@
 
 namespace App\Repository;
 
-use App\Interfaces\Model\CurrentTokenModelInterface;
+use App\Core\Database\Connection;
+use App\Core\Database\QueryBuilder;
 use App\Model\Entity\CurrentTokenModel;
 
 class CurrentTokenRepository extends BaseRepository
 {
     protected string $table = 'current_token';
+
+    public function __construct(Connection $connection, QueryBuilder $queryBuilder)
+    {
+        $this->connection = $connection->getInstance();
+        $this->queryBuilder = $queryBuilder;
+    }
 
     public function mapResults(array $results): array
     {

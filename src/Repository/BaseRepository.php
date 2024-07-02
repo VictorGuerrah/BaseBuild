@@ -14,10 +14,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
     protected string $table;
     protected QueryBuilder $queryBuilder;
 
-    public function __construct()
+    public function __construct(Connection $connection, QueryBuilder $queryBuilder, string $table)
     {
-        $this->connection = Connection::getInstance();
-        $this->queryBuilder = new QueryBuilder();
+        $this->connection = $connection->getInstance();
+        $this->queryBuilder = $queryBuilder;
+        $this->table = $table;
     }
 
     public function findAll(): array
