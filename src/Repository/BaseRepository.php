@@ -21,12 +21,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->table = $table;
     }
 
-    public function findAll(): array
+    public function findAll(array $options = []): array
     {
         try {
-            $sql = $this->queryBuilder
-                ->table($this->table)
-                ->toSql();
+            $query = $this->queryBuilder->table($this->table);
+            $this->applyOptions($query, $options);
+            $sql = $query->toSql();
 
             $stmt = $this->connection->query($sql);
             return $this->mapResults($stmt->fetchAll());
@@ -35,18 +35,20 @@ abstract class BaseRepository implements BaseRepositoryInterface
         }
     }
 
-    public function findBy(array $criteria): array
+    public function findBy(array $criteria, array $options = []): array
     {
         try {
-            $queryBuilder = $this->queryBuilder->table($this->table);
+            $query = $this->queryBuilder->table($this->table);
 
             foreach ($criteria as $column => $value) {
-                $queryBuilder->where($column, '=', $value);
+                $query->where($column, '=', $value);
             }
 
-            $sql = $queryBuilder->toSql();
+            $this->applyOptions($query, $options);
+
+            $sql = $query->toSql();
             $stmt = $this->connection->prepare($sql);
-            $stmt->execute($queryBuilder->getBindings());
+            $stmt->execute($query->getBindings());
 
             return $this->mapResults($stmt->fetchAll());
         } catch (PDOException $e) {
@@ -60,9 +62,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $results[0] ?? null;
     }
 
-    public function findByColumn(string $column, $value): array
+    public function findByColumn(string $column, $value, array $options = []): array
     {
-        return $this->findBy([$column => $value]);
+        return $this->findBy([$column => $value], $options);
     }
 
     public function findOneByColumn(string $column, $value): ?object
@@ -81,6 +83,31 @@ abstract class BaseRepository implements BaseRepositoryInterface
             $stmt->execute(array_values($attributes));
         } catch (PDOException $e) {
             throw new \Exception("Failed to save the model: " . $e->getMessage());
+        }
+    }
+
+    protected function applyOptions(QueryBuilder $queryBuilder, array $options): void
+    {
+        if (empty($options)) {
+           return;
+        }
+
+        if (isset($options['groupBy'])) {
+            $queryBuilder->groupBy($options['groupBy']);
+        }
+
+        if (isset($options['orderBy'])) {
+            foreach ($options['orderBy'] as $order) {
+                $queryBuilder->orderBy($order[0], $order[1] ?? 'ASC');
+            }
+        }
+
+        if (isset($options['limit'])) {
+            $queryBuilder->limit($options['limit']);
+        }
+
+        if (isset($options['offset'])) {
+            $queryBuilder->offset($options['offset']);
         }
     }
 
