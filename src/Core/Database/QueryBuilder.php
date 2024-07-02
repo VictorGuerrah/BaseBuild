@@ -121,11 +121,30 @@ class QueryBuilder
     {
         $columns = implode(', ', array_keys($attributes));
         $placeholders = implode(', ', array_fill(0, count($attributes), '?'));
-    
+
         $updateClause = implode(', ', array_map(fn ($col) => "{$col} = VALUES({$col})", array_keys($attributes)));
-    
+
         return "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders}) ON DUPLICATE KEY UPDATE {$updateClause}";
-    }    
+    }
+
+    public function insert(array $attributes): string
+    {
+        $columns = implode(', ', array_keys($attributes));
+        $placeholders = implode(', ', array_fill(0, count($attributes), '?'));
+
+        return "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
+    }
+
+    public function update(array $data): string
+    {
+
+        $setClause = implode(', ', array_map(fn ($col) => "{$col} = ?", array_keys($data)));
+
+        $conditions = array_map(fn ($w) => "{$w[0]} {$w[1]} ?", $this->where);
+        $whereClause = implode(' AND ', $conditions);
+
+        return "UPDATE {$this->table} SET {$setClause} WHERE {$whereClause}";
+    }
 
     public function getBindings(): array
     {

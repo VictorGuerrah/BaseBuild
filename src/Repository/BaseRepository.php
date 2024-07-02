@@ -32,6 +32,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
             return $this->mapResults($stmt->fetchAll());
         } catch (PDOException $e) {
             throw new \Exception("Failed to fetch all records: " . $e->getMessage());
+        } finally {
+            $this->queryBuilder->reset();
         }
     }
 
@@ -53,6 +55,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
             return $this->mapResults($stmt->fetchAll());
         } catch (PDOException $e) {
             throw new \Exception("Failed to fetch records by criteria: " . $e->getMessage());
+        } finally {
+            $this->queryBuilder->reset();
         }
     }
 
@@ -83,6 +87,45 @@ abstract class BaseRepository implements BaseRepositoryInterface
             $stmt->execute(array_values($attributes));
         } catch (PDOException $e) {
             throw new \Exception("Failed to save the model: " . $e->getMessage());
+        } finally {
+            $this->queryBuilder->reset();
+        }
+    }
+
+    public function insert(object $model): void
+    {
+        try {
+            $attributes = $model->getAttributes();
+            $sql = $this->queryBuilder
+                ->table($this->table)
+                ->insert($attributes);
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute(array_values($attributes));
+        } catch (PDOException $e) {
+            throw new \Exception("Failed to insert record: " . $e->getMessage());
+        } finally {
+            $this->queryBuilder->reset();
+        }
+    }
+
+    public function update(array $data, array $criteria): void
+    {
+        try {
+            $queryBuilder = $this->queryBuilder->table($this->table);
+
+            foreach ($criteria as $column => $value) {
+                $queryBuilder->where($column, '=', $value);
+            }
+
+            $bindings = array_merge(array_values($data), $queryBuilder->getBindings());
+
+            $sql = $queryBuilder->update($data);
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($bindings);
+        } catch (PDOException $e) {
+            throw new \Exception("Failed to update record: " . $e->getMessage());
+        } finally {
+            $this->queryBuilder->reset();
         }
     }
 
