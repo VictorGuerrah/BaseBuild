@@ -93,7 +93,7 @@ class QueryBuilder
         $sql = 'SELECT ' . implode(', ', $this->columns) . ' FROM ' . $this->table;
 
         if ($this->where) {
-            $conditions = array_map(fn($w) => "{$w[0]} {$w[1]} ?", $this->where);
+            $conditions = array_map(fn ($w) => "{$w[0]} {$w[1]} ?", $this->where);
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
@@ -102,7 +102,7 @@ class QueryBuilder
         }
 
         if ($this->orderBy) {
-            $orderConditions = array_map(fn($o) => "{$o[0]} {$o[1]}", $this->orderBy);
+            $orderConditions = array_map(fn ($o) => "{$o[0]} {$o[1]}", $this->orderBy);
             $sql .= ' ORDER BY ' . implode(', ', $orderConditions);
         }
 
@@ -117,8 +117,18 @@ class QueryBuilder
         return $sql;
     }
 
+    public function insertOrUpdate(array $attributes): string
+    {
+        $columns = implode(', ', array_keys($attributes));
+        $placeholders = implode(', ', array_fill(0, count($attributes), '?'));
+    
+        $updateClause = implode(', ', array_map(fn ($col) => "{$col} = VALUES({$col})", array_keys($attributes)));
+    
+        return "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders}) ON DUPLICATE KEY UPDATE {$updateClause}";
+    }    
+
     public function getBindings(): array
     {
-        return array_map(fn($w) => $w[2], $this->where);
+        return array_map(fn ($w) => $w[2], $this->where);
     }
 }

@@ -12,20 +12,22 @@ abstract class BaseRepository implements BaseRepositoryInterface
 {
     protected PDO $connection;
     protected string $table;
+    protected QueryBuilder $queryBuilder;
 
     public function __construct()
     {
         $this->connection = Connection::getInstance();
+        $this->queryBuilder = new QueryBuilder();
     }
 
     public function findAll(): array
     {
         try {
-            $query = (new QueryBuilder())
+            $sql = $this->queryBuilder
                 ->table($this->table)
                 ->toSql();
 
-            $stmt = $this->connection->query($query);
+            $stmt = $this->connection->query($sql);
             return $this->mapResults($stmt->fetchAll());
         } catch (PDOException $e) {
             throw new \Exception("Failed to fetch all records: " . $e->getMessage());
@@ -35,7 +37,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function findBy(array $criteria): array
     {
         try {
-            $queryBuilder = (new QueryBuilder())->table($this->table);
+            $queryBuilder = $this->queryBuilder->table($this->table);
 
             foreach ($criteria as $column => $value) {
                 $queryBuilder->where($column, '=', $value);
@@ -71,47 +73,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         try {
             $attributes = $model->getAttributes();
-            $columns = implode(', ', array_keys($attributes));
-            $placeholders = implode(', ', array_fill(0, count($attributes), '?'));
-            $updateClause = implode(', ', array_map(fn ($col) => "{$col} = VALUES({$col})", array_keys($attributes)));
-
-            $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders}) ON DUPLICATE KEY UPDATE {$updateClause}";
+            $sql = $this->queryBuilder
+                ->table($this->table)
+                ->insertOrUpdate($attributes);
             $stmt = $this->connection->prepare($sql);
             $stmt->execute(array_values($attributes));
         } catch (PDOException $e) {
             throw new \Exception("Failed to save the model: " . $e->getMessage());
-        }
-    }
-
-
-    protected function insert(object $model): void
-    {
-        try {
-            $attributes = $model->getAttributes();
-            $columns = implode(', ', array_keys($attributes));
-            $placeholders = implode(', ', array_fill(0, count($attributes), '?'));
-
-            $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute(array_values($attributes));
-        } catch (PDOException $e) {
-            throw new \Exception("Failed to insert the model: " . $e->getMessage());
-        }
-    }
-
-    protected function update(object $model): void
-    {
-        try {
-            $attributes = $model->getAttributes();
-            $id = $model->getId();
-
-            $setClause = implode(', ', array_map(fn ($col) => "{$col} = ?", array_keys($attributes)));
-
-            $sql = "UPDATE {$this->table} SET {$setClause} WHERE id = ?";
-            $stmt = $this->connection->prepare($sql);
-            $stmt->execute([...array_values($attributes), $id]);
-        } catch (PDOException $e) {
-            throw new \Exception("Failed to update the model: " . $e->getMessage());
         }
     }
 
