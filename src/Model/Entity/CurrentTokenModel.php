@@ -17,7 +17,7 @@ class CurrentTokenModel implements CurrentTokenModelInterface
         $this->setIsValid($isValid);
     }
 
-    public function getUserId(): string
+    public function getId(): string
     {
         return $this->userId;
     }
@@ -46,5 +46,14 @@ class CurrentTokenModel implements CurrentTokenModelInterface
     public function setIsValid(bool $isValid): void
     {
         $this->isValid = $isValid;
+    }
+
+    public function getAttributes(): array
+    {
+        return [
+            'UserID' => $this->getId(),
+            'TokenHash' => $this->getHash(),
+            'IsValid' => $this->isValid(),
+        ];
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Middleware;
 
-use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Repository\UserRepository;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 
 class AuthenticationMiddleware
 {
-    public function handle(CurrentTokenServiceInterface $currentTokenService, AuthServiceInterface $authService, UserRepositoryInterface $userRepository): void
+    public function handle(CurrentTokenServiceInterface $currentTokenService, AuthServiceInterface $authService, UserRepository $userRepository): void
     {
         try {
             $authData = $authService->getCookies();
@@ -16,7 +16,7 @@ class AuthenticationMiddleware
                 throw new \Exception("Invalid session.", 401);
             }
 
-            $user = $userRepository->findById($authData['info']['userID']);
+            $user = $userRepository->findOneBy(['ID' => $authData['info']['userID']]);
             $authService->setLoggedUser($user);
             $currentTokenService->checkToken($authData['info']['userID'], $authData['token']);
         } catch (\Exception $ex) {

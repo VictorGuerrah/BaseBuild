@@ -6,7 +6,7 @@ use App\Constants\AuthenticationPolicy;
 use App\Core\Http\Cookies;
 use App\Core\Environment;
 use App\Core\Http\Jwt;
-use App\Interfaces\Repository\UserRepositoryInterface;
+use App\Repository\UserRepository;
 use App\Interfaces\Service\AuthServiceInterface;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 use App\Model\Entity\UserModel;
@@ -18,10 +18,10 @@ class AuthService implements AuthServiceInterface
     public const SESSION_IDENTIFIER = 'basebuild-in';
     public UserModel $loggedUser;
 
-    private UserRepositoryInterface $userRepository;
+    private UserRepository $userRepository;
     private CurrentTokenServiceInterface $currentTokenService;
 
-    public function __construct(UserRepositoryInterface $UserRepository, CurrentTokenServiceInterface $currentTokenService)
+    public function __construct(UserRepository $UserRepository, CurrentTokenServiceInterface $currentTokenService)
     {
         $this->userRepository = $UserRepository;
         $this->currentTokenService = $currentTokenService;

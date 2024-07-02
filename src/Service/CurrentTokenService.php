@@ -2,31 +2,24 @@
 
 namespace App\Service;
 
-use App\Interfaces\Repository\CurrentTokenRepositoryInterface;
+use App\Repository\CurrentTokenRepository;
 use App\Interfaces\Service\CurrentTokenServiceInterface;
 use App\Model\Entity\CurrentTokenModel;
 
 class CurrentTokenService implements CurrentTokenServiceInterface
 {
-    private CurrentTokenRepositoryInterface $currentTokenRepository;
+    private CurrentTokenRepository $currentTokenRepository;
 
-    public function __construct(CurrentTokenRepositoryInterface $currentTokenRepository)
+    public function __construct(CurrentTokenRepository $currentTokenRepository)
     {
         $this->currentTokenRepository = $currentTokenRepository;
     }
 
     public function save(string $userId, string $token): void
     {
-        $currentToken = $this->currentTokenRepository->findOneBy(['UserID' => $userId]);
         $newCurrentToken = new CurrentTokenModel($userId, $token, true);
-
-        if (empty($currentToken)) {
-            $this->currentTokenRepository->insert($newCurrentToken);
-        } else {
-            $this->currentTokenRepository->update($newCurrentToken);
-        }
+        $this->currentTokenRepository->save($newCurrentToken);
     }
-
 
     public function checkToken(string $userId, string $token): void
     {

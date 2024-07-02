@@ -33,4 +33,13 @@ class UserModel implements UserModelInterface
     {
         return $this->passwordHash;
     }
+
+    public function getAttributes(): array
+    {
+        return [
+            'Email' => $this->getEmail(),
+            'Password' => $this->passwordHash,
+            'ID' => $this->id,
+        ];
+    }
 }
